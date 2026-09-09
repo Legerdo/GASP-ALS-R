@@ -9,10 +9,10 @@ public class GAR : ModuleRules
 
         CppCompileWarningSettings.NonInlinedGenCppWarningLevel = WarningLevel.Warning;
 
-        PublicDependencyModuleNames.AddRange(
+		PublicDependencyModuleNames.AddRange(
 		[
 			"Core", "CoreUObject", "Engine", "EnhancedInput", "GameplayTags", "GameplayAbilities", "GameplayTasks", "ModularGameplay", "PoseSearch",
-			"Mover", "AnimationWarpingRuntime"
+			"Mover", "AnimationWarpingRuntime", "PhysicsControl"
 		]);
 
         PrivateDependencyModuleNames.AddRange(

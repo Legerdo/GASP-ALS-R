@@ -11,7 +11,7 @@
 #include "MoveLibrary/AirMovementUtils.h"
 #include "Settings/GarMovementSettings.h"
 #include "State/GarCharacterMoverInputs.h"
-#include "GarPhysicalAnimationComponent.h"
+#include "GarPhysicsControlComponent.h"
 #include "GarCharacterMoverComponent.h"
 #include "GarCharacter.h"
 #include "GarConstants.h"
@@ -34,25 +34,18 @@ void UGarMoverRagdollingMode::GenerateMove_Implementation(const FMoverSimContext
 	check(StartingSyncState);
 
 	const AGarCharacter* Character{Cast<AGarCharacter>(MoverComp->GetOwner())};
-	// GetBoneTransform は ComponentSpaceTransforms に依存するが、DedicatedServer では
-	// VisibilityBasedAnimTickOption により物理シミュレーション結果が骨トランスフォームに
-	// コピーされないことがある。GetBodyInstance の物理ボディを直接参照することで
-	// サーバーでも正確なラグドール骨位置を取得する。
 	FTransform TargetTransform(StartingSyncState->GetOrientation_WorldSpace(), StartingSyncState->GetLocation_WorldSpace());
-	if (FBodyInstance* TopBoneBodyForTransform = Character->GetMesh()->GetBodyInstance(TopBoneName))
-	{
-		TargetTransform = TopBoneBodyForTransform->GetUnrealWorldTransform();
-	}
+	Character->GetPhysicsControl()->GetTopBodyTransform(TargetTransform);
 	auto TargetLocation{TargetTransform.GetLocation()};
 
 #if ENABLE_DRAW_DEBUG
-	if (UGarUtility::ShouldDisplayDebugForActor(Character, UGarConstants::PADebugDisplayName()))
+	if (UGarUtility::ShouldDisplayDebugForActor(Character, UGarConstants::PhysicsControlDebugDisplayName()))
 	{
 		DrawDebugCoordinateSystem(Character->GetWorld(), TargetLocation, TargetTransform.Rotator(), 150.0f);
 	}
 #endif
 
-	if (Character->GetPhysicalAnimation()->GetRagdollingState().bFreezing)
+	if (Character->GetPhysicsControl()->IsRagdollFrozen())
 	{
 		return;
 	}
@@ -61,14 +54,11 @@ void UGarMoverRagdollingMode::GenerateMove_Implementation(const FMoverSimContext
 
 	const FVector CurrentLocation = Character->GetActorLocation();
 
-	auto TopBoneBody{Character->GetMesh()->GetBodyInstance(TopBoneName)};
-
 	float TopBoneSpeed2D = 0;
 	float TopBoneSpeed3D = 0;
-	
-	if (TopBoneBody)
+	FVector TopBoneVelocity;
+	if (Character->GetPhysicsControl()->GetTopBodyVelocity(TopBoneVelocity))
 	{
-		const FVector TopBoneVelocity = TopBoneBody->GetUnrealWorldVelocity();
 		TopBoneSpeed2D = TopBoneVelocity.Size2D();
 		TopBoneSpeed3D = TopBoneVelocity.Size();
 	}
@@ -94,12 +84,12 @@ void UGarMoverRagdollingMode::GenerateMove_Implementation(const FMoverSimContext
 	}
 
 	auto TargetDirection{TargetTransform.GetRotation().RotateVector(FVector::RightVector)};
-	if (TopBoneBody)
+	if (Character->GetPhysicsControl()->GetTopBodyTransform(TargetTransform))
 	{
 		auto TopBoneDirection{TargetTransform.GetRotation().RotateVector(FVector::ForwardVector)};
 		if (TopBoneDirection.Z < 0.7f && TopBoneDirection.Z > -0.7f)
 		{
-			if (Character->GetPhysicalAnimation()->GetRagdollingState().bFacingUpward)
+			if (Character->GetPhysicsControl()->IsRagdollingFacingUpward())
 			{
 				TargetDirection = -TopBoneDirection;
 			}

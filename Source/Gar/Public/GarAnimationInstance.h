@@ -19,7 +19,7 @@ class GAR_API UGarAnimationInstance : public UAnimInstance
 	GENERATED_BODY()
 
 	friend class UGarLinkedAnimationInstance;
-	friend class UGarPhysicalAnimationComponent;
+	friend class UGarPhysicsControlComponent;
 
 public:
 	UGarAnimationInstance();

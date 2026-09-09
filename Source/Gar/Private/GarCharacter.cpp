@@ -19,7 +19,7 @@
 #include "State/GarCharacterMoverInputs.h"
 #include "GarAnimationInstance.h"
 #include "GarCharacterMoverComponent.h"
-#include "GarPhysicalAnimationComponent.h"
+#include "GarPhysicsControlComponent.h"
 #include "GarAbilitySystemComponent.h"
 #include "GarGameplayTags.h"
 #include "GarConstants.h"
@@ -39,7 +39,7 @@ FName AGarCharacter::CapsuleComponentName(TEXT("CharacterCollider"));
 FName AGarCharacter::ProneCapsuleComponentName(TEXT("HorizontalCollider"));
 FName AGarCharacter::CharacterMoverComponentName(TEXT("CharacterMoverComp"));
 FName AGarCharacter::MotionWarpingComponentName(TEXT("MotionWarpComp"));
-FName AGarCharacter::PhysicalAnimationComponentName(TEXT("PhysicalAnimComp"));
+FName AGarCharacter::PhysicsControlComponentName(TEXT("PhysicsControlComp"));
 FName AGarCharacter::AbilitySystemComponentName(TEXT("AbilitySystemComp"));
 FName AGarCharacter::OverlayModeComponentName(TEXT("OverlayComp"));
 FName AGarCharacter::DeltaOverlayModeComponentName(TEXT("DeltaOverlayComp"));
@@ -99,7 +99,8 @@ AGarCharacter::AGarCharacter(const FObjectInitializer& ObjectInitializer) : Supe
 
 	MotionWarping = CreateDefaultSubobject<UMotionWarpingComponent>(MotionWarpingComponentName);
 
-	PhysicalAnimation = CreateDefaultSubobject<UGarPhysicalAnimationComponent>(PhysicalAnimationComponentName);
+	PhysicsControl = CreateDefaultSubobject<UGarPhysicsControlComponent>(PhysicsControlComponentName);
+	PhysicalAnimation = PhysicsControl;
 
 	AbilitySystem = CreateDefaultSubobject<UGarAbilitySystemComponent>(AbilitySystemComponentName);
 
@@ -182,11 +183,6 @@ void AGarCharacter::PostInitializeComponents()
 		}
 	}
 
-	if (PhysicalAnimation)
-	{
-		PhysicalAnimation->SetSkeletalMeshComponent(Mesh);
-	}
-
 	if (IsValid(AbilitySystem))
 	{
 		AbilitySystem->Initialize(this);
@@ -210,16 +206,6 @@ void AGarCharacter::PostInitializeComponents()
 
 bool AGarCharacter::TeleportTo(const FVector& DestLocation, const FRotator& DestRotation, bool bIsATest, bool bNoCheck)
 {
-	// PAC is always active, so mesh bodies are always in QueryAndPhysics + WorldStatic Block state.
-	// As a result, FindTeleportSpot's EncroachingBlockingGeometry picks up the mesh bodies,
-	// causing it to always fail even for valid teleport destinations.
-	// When bIsATest=false (actual teleport), force bNoCheck=true to skip FindTeleportSpot
-	// and move via SetWorldLocationAndRotation (which always succeeds).
-	// When bIsATest=true (provisional spot-search check), preserve the original bNoCheck value.
-	if (!bIsATest)
-	{
-		bNoCheck = true;
-	}
 	return Super::TeleportTo(DestLocation, DestRotation, bIsATest, bNoCheck);
 }
 
@@ -227,31 +213,13 @@ void AGarCharacter::TeleportSucceeded(bool bIsATest)
 {
 	Super::TeleportSucceeded(bIsATest);
 
-	if (!bIsATest)
-	{
-		if (Mesh)
-		{
-			// Passing a zero delta to SetWorldTransform causes UPrimitiveComponent::MoveComponentImpl
-			// to return early, never reaching OnSkelMeshPhysicsTeleported.Broadcast().
-			// Apply a tiny offset with TeleportPhysics first, then immediately restore the correct transform.
-			// This fires the Broadcast twice within the same frame, ensuring
-			// PAC::OnTeleport -> UpdateTargetActors(TeleportPhysics) runs correctly.
-			const FTransform CorrectTransform = Mesh->GetComponentTransform();
-			FTransform TinyOffsetTransform = CorrectTransform;
-			TinyOffsetTransform.AddToTranslation(FVector(1.f, 0.f, 0.f));
-			// First call: move only to create a non-zero delta. No physics snap or Broadcast needed.
-			Mesh->SetWorldTransform(TinyOffsetTransform, false, nullptr, ETeleportType::None);
-			// Second call: snap to the correct position. TeleportPhysics fires Broadcast -> PAC::OnTeleport runs.
-			Mesh->SetWorldTransform(CorrectTransform, false, nullptr, ETeleportType::TeleportPhysics);
-		}
-	}
 }
 
 void AGarCharacter::BeginPlay()
 {
 	if(!ensure(IsValid(Settings))) return;
 	if(!ensure(IsValid(CharacterMover))) return;
-	if(!ensure(IsValid(PhysicalAnimation))) return;
+	if(!ensure(IsValid(PhysicsControl))) return;
 	if(!ensure(IsValid(MotionWarping))) return;
 	if(!ensure(AnimationInstance.IsValid())) return;
 

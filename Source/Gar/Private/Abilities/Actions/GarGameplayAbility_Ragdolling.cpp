@@ -6,7 +6,7 @@
 #include "GarCharacterMoverComponent.h"
 #include "GarAnimationInstance.h"
 #include "GarAbilitySystemComponent.h"
-#include "GarPhysicalAnimationComponent.h"
+#include "GarPhysicsControlComponent.h"
 #include "LinkedAnimLayers/GarRagdollingAnimInstance.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -89,22 +89,22 @@ bool UGarGameplayAbility_Ragdolling::CanActivateAbility(const FGameplayAbilitySp
 	auto Character{GetGarCharacterFromActorInfo()};
 	if (IsValid(Character))
 	{
-		auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-		if (IsValid(PhysicalAnimation))
+		auto* PhysicsControl{Character->GetPhysicsControl()};
+		if (IsValid(PhysicsControl))
 		{
 			const auto& Tag{GetAssetTags().First()};
-			if (PhysicalAnimation->HasRagdollingSettings(Tag))
+			if (PhysicsControl->HasRagdollSettings(Tag))
 			{
 				return true;
 			}
 			else
 			{
-				UE_LOG(LogGar, Error, TEXT("PhysicalAnimationComponent Has no Ragdolling Settings for '%s'."), *Tag.ToString());
+				UE_LOG(LogGar, Error, TEXT("PhysicsControlComponent has no ragdoll settings for '%s'."), *Tag.ToString());
 			}
 		}
 		else
 		{
-			UE_LOG(LogGar, Error, TEXT("PhysicalAnimationComponent is Invalid."));
+			UE_LOG(LogGar, Error, TEXT("PhysicsControlComponent is invalid."));
 		}
 	}
 	else
@@ -127,6 +127,12 @@ void UGarGameplayAbility_Ragdolling::ActivateAbility(const FGameplayAbilitySpecH
 	if (IsActive())
 	{
 		auto* Character{GetGarCharacterFromActorInfo()};
+		if (!Character || !Character->GetPhysicsControl()->StartRagdoll(GetAssetTags().First()))
+		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+			return;
+		}
+
 		TickTask = UGarAbilityTask_Tick::New(this, FName(TEXT("UGarGameplayAbility_Ragdolling")));
 		if (TickTask.IsValid())
 		{
@@ -139,8 +145,6 @@ void UGarGameplayAbility_Ragdolling::ActivateAbility(const FGameplayAbilitySpecH
 void UGarGameplayAbility_Ragdolling::Tick(const float DeltaTime)
 {
 	auto* Character{GetGarCharacterFromActorInfo()};
-	auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-	auto& RagdollingState{PhysicalAnimation->GetRagdollingState()};
 
 	if (!IsActive())
 	{
@@ -167,11 +171,10 @@ void UGarGameplayAbility_Ragdolling::EndAbility(const FGameplayAbilitySpecHandle
 												const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	auto* Character{GetGarCharacterFromActorInfo()};
-	auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-	auto& RagdollingState{PhysicalAnimation->GetRagdollingState()};
 
 	auto* OverrideModeComponent{Character->GetComponentByClass<UGarOverrideModeComponent>()};
 	OverrideModeComponent->EndCurrentRagdollingTask();
+	Character->GetPhysicsControl()->StopRagdoll();
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -179,7 +182,5 @@ void UGarGameplayAbility_Ragdolling::EndAbility(const FGameplayAbilitySpecHandle
 bool UGarGameplayAbility_Ragdolling::IsGroundedAndAged() const
 {
 	auto* Character{GetGarCharacterFromActorInfo()};
-	auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-	auto& RagdollingState{PhysicalAnimation->GetRagdollingState()};
-	return RagdollingState.IsGroundedAndAged();
+	return Character && Character->GetPhysicsControl()->IsRagdollingAndGroundedAndAged();
 }

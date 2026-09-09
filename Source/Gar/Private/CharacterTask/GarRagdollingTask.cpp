@@ -8,7 +8,7 @@
 #include "GarCharacter.h"
 #include "GarCharacterMoverComponent.h"
 #include "GarAbilitySystemComponent.h"
-#include "GarPhysicalAnimationComponent.h"
+#include "GarPhysicsControlComponent.h"
 #include "LinkedAnimLayers/GarRagdollingOverrideAnimInstance.h"
 #include "LinkedAnimLayers/GarRagdollingAnimInstance.h"
 #include "GarGameplayTags.h"
@@ -30,9 +30,7 @@ void UGarRagdollingTask::Begin()
 			RagdollingOverrideAnimInstance->Reset();
 			RagdollingOverrideAnimInstance->SetRagdollingTaskActive(true);
 
-			auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-			auto& RagdollingState{PhysicalAnimation->GetRagdollingState()};
-			RagdollingState.RagdollingAnimInstance->SetRagdollingTaskActive(true);
+			Character->GetPhysicsControl()->SetRagdollingTaskActive(true);
 		}
 	}
 }
@@ -55,29 +53,27 @@ void UGarRagdollingTask::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-	auto& RagdollingState{PhysicalAnimation->GetRagdollingState()};
-
-	if (!IsActive() || RagdollingState.bFreezing)
+	auto* PhysicsControl{Character->GetPhysicsControl()};
+	if (!IsActive() || PhysicsControl->IsRagdollFrozen())
 	{
 		return;
 	}
 
-	if (RagdollingState.IsGroundedAndAged())
+	if (PhysicsControl->IsRagdollingAndGroundedAndAged())
 	{
 		if (!bOnGroundedAndAgedFired)
 		{
 			bOnGroundedAndAgedFired = true;
 			K2_OnGroundedAndAged();
 		}
-		Character->SetInputStance(RagdollingState.bFacingUpward ? GarStanceTags::LyingBack : GarStanceTags::LyingFront);
+		Character->SetInputStance(PhysicsControl->IsRagdollingFacingUpward() ? GarStanceTags::LyingBack : GarStanceTags::LyingFront);
 
 		// local only. not be replicated.
-		Character->GetGarAbilitySystem()->SetLooseGameplayTagCount(GarStateFlagTags::FacingUpward, RagdollingState.bFacingUpward ? 1 : 0);
+		Character->GetGarAbilitySystem()->SetLooseGameplayTagCount(GarStateFlagTags::FacingUpward, PhysicsControl->IsRagdollingFacingUpward() ? 1 : 0);
 	}
 	else
 	{
-		if (RagdollingState.bGrounded)
+		if (PhysicsControl->GetRagdollStatus().bGrounded)
 		{
 			Character->SetInputStance(GarStanceTags::Crouching);
 		}
@@ -112,14 +108,10 @@ void UGarRagdollingTask::OnFinished()
 {
 	Super::OnFinished();
 
-	auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-	auto& RagdollingState{PhysicalAnimation->GetRagdollingState()};
-	RagdollingState.RagdollingAnimInstance->SetRagdollingTaskActive(false);
+	Character->GetPhysicsControl()->SetRagdollingTaskActive(false);
 }
 
 bool UGarRagdollingTask::IsGroundedAndAged() const
 {
-	auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-	auto& RagdollingState{PhysicalAnimation->GetRagdollingState()};
-	return RagdollingState.IsGroundedAndAged();
+	return Character.IsValid() && Character->GetPhysicsControl()->IsRagdollingAndGroundedAndAged();
 }

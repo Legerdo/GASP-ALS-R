@@ -74,6 +74,10 @@
 		{
 			"Name": "NetworkPrediction",
 			"Enabled": true
+		},
+		{
+			"Name": "PhysicsControl",
+			"Enabled": true
 		}
 	],
 	"Modules": [

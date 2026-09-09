@@ -11,7 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PhysicsEngine/PhysicsAsset.h"
 #include "GarAnimationInstance.h"
-#include "GarPhysicalAnimationComponent.h"
+#include "GarPhysicsControlComponent.h"
 #include "GarConstants.h"
 #include "Utility/GarMath.h"
 #include "Utility/GarUtility.h"
@@ -27,7 +27,7 @@ void AGarCharacter::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& Displ
 		!DisplayInfo.IsDisplayOn(UGarConstants::ShapesDebugDisplayName()) &&
 		!DisplayInfo.IsDisplayOn(UGarConstants::TracesDebugDisplayName()) &&
 		!DisplayInfo.IsDisplayOn(UGarConstants::TraversalDebugDisplayName()) &&
-		!DisplayInfo.IsDisplayOn(UGarConstants::PADebugDisplayName()))
+		!DisplayInfo.IsDisplayOn(UGarConstants::PhysicsControlDebugDisplayName()))
 	{
 		OnDisplayDebug.Broadcast(Canvas, DisplayInfo, Unused, VerticalLocation);
 		Super::DisplayDebug(Canvas, DisplayInfo, Unused, VerticalLocation);
@@ -119,12 +119,12 @@ void AGarCharacter::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& Displ
 		DisplayDebugHeader(Canvas, MantlingHeaderText, {0.0f, 0.333333f, 0.0f}, Scale, HorizontalLocation, VerticalLocation);
 	}
 
-	static const auto PAHeaderText{FText::AsCultureInvariant(FString{TEXTVIEW("Gar.PhysicalAnimation (Shift + 6)")})};
+	static const auto PAHeaderText{FText::AsCultureInvariant(FString{TEXTVIEW("Gar.PhysicsControl (Shift + 6)")})};
 
-	if (DisplayInfo.IsDisplayOn(UGarConstants::PADebugDisplayName()))
+	if (DisplayInfo.IsDisplayOn(UGarConstants::PhysicsControlDebugDisplayName()))
 	{
 		DisplayDebugHeader(Canvas, PAHeaderText, {0.0f, 0.333333f, 0.0f}, Scale, HorizontalLocation, VerticalLocation);
-		PhysicalAnimation->DisplayDebug(Canvas, DisplayInfo, HorizontalLocation, VerticalLocation);
+		PhysicsControl->DisplayDebug(Canvas, DisplayInfo, HorizontalLocation, VerticalLocation);
 	}
 	else
 	{
@@ -221,9 +221,9 @@ void AGarCharacter::InitializeCurveNames()
 	CurveNames.AddUnique(UGarConstants::BlockSprintCurveName());
 	CurveNames.AddUnique(UGarConstants::FootstepSoundBlockCurveName());
 
-	// Physical Animation Curves
-	auto CurveBoneMappings{PhysicalAnimation->GetCurveBoneMappings()};
-	for(const auto& Mapping : CurveBoneMappings)
+	// Physics Control Curves
+	const auto& CurveSetMappings{PhysicsControl->GetCurveSetMappings()};
+	for(const auto& Mapping : CurveSetMappings)
 	{
 		CurveNames.AddUnique(Mapping.CurveName);
 	}

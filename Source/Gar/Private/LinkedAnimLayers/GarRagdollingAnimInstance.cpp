@@ -1,6 +1,6 @@
 #include "LinkedAnimLayers/GarRagdollingAnimInstance.h"
 #include "Abilities/Actions/GarGameplayAbility_Ragdolling.h"
-#include "GarPhysicalAnimationComponent.h"
+#include "GarPhysicsControlComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GarRagdollingAnimInstance)
 
@@ -35,13 +35,13 @@ void UGarRagdollingAnimInstance::UnFreeze()
 	}
 }
 
-void UGarRagdollingAnimInstance::Refresh(const FGarRagdollingState& State, bool bNewActive)
+void UGarRagdollingAnimInstance::Refresh(const FGarRagdollStatus& Status, bool bNewActive)
 {
 	check(IsInGameThread())
 
 	//bActive = Ability.IsActive() && !Ability.bIsAbilityEnding; // this is not work. bIsAbilityEnding can be true in Super::EndAbility.
 	bActive = bNewActive;
-	bGroundedAndAged = State.IsGroundedAndAged();
-	bFacingUpward = State.bFacingUpward;
-	LyingDownYawAngleDelta = State.LyingDownYawAngleDelta;
+	bGroundedAndAged = Status.IsGroundedAndAged();
+	bFacingUpward = Status.bFacingUpward;
+	LyingDownYawAngleDelta = Status.LyingDownYawAngleDelta;
 }

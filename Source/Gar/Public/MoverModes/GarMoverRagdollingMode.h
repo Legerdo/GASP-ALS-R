@@ -16,12 +16,6 @@ class UGarMoverRagdollingMode : public UBaseMovementMode
 	GENERATED_UCLASS_BODY()
 
 public:
-	/**
-	 * The bone name to trace
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mover)
-	FName TopBoneName{TEXTVIEW("pelvis")};
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mover)
 	float MinSpeed{300.0f};
 

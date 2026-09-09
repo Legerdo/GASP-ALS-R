@@ -49,5 +49,5 @@ public:
 		bRagdollingTaskActive = bNewRagdollingTaskActive;
 	}
 
-	void Refresh(const struct FGarRagdollingState& State, bool bNewActive);
+	void Refresh(const struct FGarRagdollStatus& Status, bool bNewActive);
 };

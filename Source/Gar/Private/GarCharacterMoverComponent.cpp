@@ -25,7 +25,6 @@
 #include "MoverModifiers/GarMoverStanceModifier.h"
 #include "MoverModifiers/GarMoverGaitModifier.h"
 #endif
-#include "GarPhysicalAnimationComponent.h"
 #include "Settings/GarMovementSettings.h"
 #include "State/GarCharacterMoverInputs.h"
 #include "State/GarCharacterMoverSyncState.h"

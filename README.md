@@ -28,7 +28,7 @@ This project takes [GASPALS](https://github.com/PolygonHive/GASPALS) as its foun
 - [Animation](Documents/Animation.md) — `UGarAnimationInstance`, linked layers
 - [Overlay System](Documents/OverlaySystem.md) — overlay / delta-overlay / override components and abilities
 - [Gameplay Abilities](Documents/GameplayAbilities.md) — GAS ability hierarchy, traversal, ragdolling, sliding
-- [Physical Animation & Ragdolling](Documents/PhysicalAnimationRagdolling.md) — `UGarPhysicalAnimationComponent`, ragdoll state machine
+- [Physics Control & Ragdolling](Documents/PhysicsControlRagdolling.md) — `UGarPhysicsControlComponent`, ragdoll state machine
 - [Camera](Documents/Camera.md) — `GarCamera` module, `UGarGameplayCameraStateComponent`
 - [Gameplay Tags](Documents/GameplayTags.md) — full tag namespace reference
 
