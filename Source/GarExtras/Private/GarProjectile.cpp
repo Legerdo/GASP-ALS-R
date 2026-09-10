@@ -41,6 +41,44 @@ AGarProjectile::AGarProjectile(const FObjectInitializer& ObjectInitializer) : Su
     }
 }
 
+void AGarProjectile::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	RefreshOwnerCollisionIgnore();
+}
+
+void AGarProjectile::SetOwner(AActor* NewOwner)
+{
+	Super::SetOwner(NewOwner);
+	// GA_GarExtra_Fire assigns the owner after spawning and FireInDirection, so
+	// BeginPlay alone is too early. Apply the ignore before the first movement tick.
+	RefreshOwnerCollisionIgnore();
+}
+
+void AGarProjectile::OnRep_Owner()
+{
+	Super::OnRep_Owner();
+	// Replication assigns Owner without calling SetOwner.
+	RefreshOwnerCollisionIgnore();
+}
+
+void AGarProjectile::RefreshOwnerCollisionIgnore()
+{
+	if (!CollisionComponent)
+	{
+		return;
+	}
+
+	AActor* CurrentOwner = GetOwner();
+	if (IgnoredOwner.Get() != CurrentOwner)
+	{
+		// Preserve any unrelated entries in the movement ignore list.
+		CollisionComponent->IgnoreActorWhenMoving(IgnoredOwner.Get(), false);
+	}
+	CollisionComponent->IgnoreActorWhenMoving(CurrentOwner, true);
+	IgnoredOwner = CurrentOwner;
+}
+
 // Called when the game starts or when spawned
 void AGarProjectile::BeginPlay()
 {

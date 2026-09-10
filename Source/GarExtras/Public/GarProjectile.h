@@ -23,12 +23,20 @@ protected:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void OnRep_Owner() override;
 
 public:	
+	virtual void PostInitializeComponents() override;
+	virtual void SetOwner(AActor* NewOwner) override;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
 	// 発射物の発射方向の速度を初期化する関数。
 	void FireInDirection(const FVector& ShootDirection);
+
+private:
+	void RefreshOwnerCollisionIgnore();
+	TWeakObjectPtr<AActor> IgnoredOwner;
 };
