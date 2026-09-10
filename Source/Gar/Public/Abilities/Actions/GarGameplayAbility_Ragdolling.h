@@ -6,6 +6,7 @@
 #include "GarGameplayAbility_Ragdolling.generated.h"
 
 class UGarOverrideTask;
+class UGarRagdollingTask;
 
 /**
  * Ragdolling
@@ -56,4 +57,5 @@ protected:
 	void K2_OnGroundedAndAged();
 
 	TWeakObjectPtr<class UGarAbilityTask_Tick> TickTask;
+	TWeakObjectPtr<UGarRagdollingTask> RagdollingTask;
 };

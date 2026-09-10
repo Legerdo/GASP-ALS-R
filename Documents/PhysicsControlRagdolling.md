@@ -35,15 +35,29 @@ Physics Control Asset, not in a Skeletal Mesh Physics Asset profile.
 
 ## Ragdoll lifecycle
 
-`UGarGameplayAbility_Ragdolling` calls `StartRagdoll()` and `StopRagdoll()` using its asset tag.
-While active, GAR:
+`UGarGameplayAbility_Ragdolling` starts/ends a `UGarRagdollingTask` and decides transitions to
+other abilities. It queries the task for settling state and velocity; it does not operate
+Physics Control directly. `UGarOverrideModeComponent` starts the same task from replicated
+tags on proxies (the configured AbilitySet also registers their task classes).
+
+`UGarRagdollingTask` alone issues `StartRagdoll()` / `StopRagdoll()` to Physics Control.
+`Begin()` enters physics ragdoll, `End()` / `Cancel()` leave it, and `OnFinished()` cleans up
+the remaining animation blend. Physics ownership does not require a valid override animation
+instance. Physics Control advances the state it was given; it does not independently start or
+stop ragdoll from gameplay tags. While active, GAR:
 
 1. invokes the configured ragdoll Control Profile;
 2. sets all Body Modifiers to `Simulated` and enables physics collision;
 3. disables Controls by default for a full ragdoll, or preserves them when configured;
 4. drives the Mover capsule from the `TopBoneName` physics body;
 5. freezes settled bodies by changing their Body Modifiers to `Kinematic` and storing a pose snapshot;
-6. restores capsule collision and queues the get-up orientation correction when ending.
+6. restores capsule collision and normal physical animation when ending.
+
+The shipped `Unconsious` ability ends when grounded and settled, then enters `GettingDown`.
+This is a persistent down state, not an automatic get-up: the existing jump input activates
+`GettingUp`. Keep the ragdoll task active through the ability's Blueprint end event so its
+grounded/aged predicate can select `GettingDown`; end the task after that handoff. Reentrant
+or deferred ability endings must not prematurely clear this state.
 
 `UGarMoverRagdollingMode`, the ragdoll ability/task, and the linked animation layer depend only
 on `UGarPhysicsControlComponent`'s public ragdoll state. They do not access Physics Control

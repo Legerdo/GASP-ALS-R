@@ -11,6 +11,9 @@
 #include "Editor.h"
 #include "Engine/StaticMeshActor.h"
 #include "Engine/World.h"
+#include "Engine/LocalPlayer.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputAction.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/WorldSettings.h"
@@ -371,6 +374,180 @@ static void CreateGarPhysicsControlTestWorld()
 	Floor->GetStaticMeshComponent()->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube")));
 	Floor->SetActorScale3D(FVector(100, 100, 0.04));
 	Floor->GetStaticMeshComponent()->SetCollisionProfileName(TEXT("BlockAll"));
+}
+
+// Exercise the shipped abilities and jump input, not a direct StopRagdoll call.
+class FGarDownStateRecoveryCommand : public IAutomationLatentCommand
+{
+public:
+	explicit FGarDownStateRecoveryCommand(FAutomationTestBase* InTest) : Test(InTest) {}
+	virtual ~FGarDownStateRecoveryCommand() override
+	{
+		if (bPausedMeshTick && Character.IsValid()) Character->GetMesh()->SetComponentTickEnabled(true);
+		MeshMoveWarnings.Check(Test);
+	}
+
+	virtual bool Update() override
+	{
+		if (FPlatformTime::Seconds() - Started > 120.0)
+		{
+			Test->AddError(TEXT("Timed out waiting for down-state recovery"));
+			return true;
+		}
+		UWorld* World = GEditor->PlayWorld;
+		if (!World || !World->HasBegunPlay()) return false;
+		if (Stage == 0)
+		{
+			APlayerController* Controller = World->GetFirstPlayerController();
+			if (!Controller) return false;
+			UClass* Class = LoadClass<AGarCharacter>(nullptr,
+				TEXT("/GAR/Example/PlayerCharacter/B_GarExtra_PlayerCharacter.B_GarExtra_PlayerCharacter_C"));
+			FActorSpawnParameters Spawn;
+			Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			Character = World->SpawnActor<AGarCharacter>(Class,
+				FVector(0, 0, FGarPhysicsControlPIECommand::FloorHeight + 100), FRotator::ZeroRotator, Spawn);
+			if (!Test->TestNotNull(TEXT("Spawn shipped player character"), Character.Get())) return true;
+			Controller->Possess(Character.Get());
+			Input = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
+			JumpAction = LoadObject<UInputAction>(nullptr, TEXT("/GAR/Core/Input/IA_Gar_Jump.IA_Gar_Jump"));
+			if (!Test->TestNotNull(TEXT("Enhanced input subsystem"), Input.Get())
+				|| !Test->TestNotNull(TEXT("Shipped jump input"), JumpAction.Get())) return true;
+			// Initial asset loading is synchronous and can exceed the gameplay timeout on a cold cache.
+			Started = FPlatformTime::Seconds();
+			Advance(World);
+			return false;
+		}
+		if (!Character.IsValid() || !Input.IsValid())
+		{
+			Test->AddError(TEXT("Recovery test lost its character or input subsystem"));
+			return true;
+		}
+		AGarCharacter* Pawn = Character.Get();
+		UAbilitySystemComponent* ASC = Pawn->GetAbilitySystemComponent();
+		UGarPhysicsControlComponent* Physics = Pawn->GetPhysicsControl();
+		const float Elapsed = World->GetTimeSeconds() - StageStarted;
+		if (Stage == 1 && Elapsed > 2.0f)
+		{
+			if (!Test->TestTrue(TEXT("Start ragdoll"), ASC->TryActivateAbilitiesByTag(
+				FGameplayTagContainer(GarLocomotionActionTags::Unconsious)))) return true;
+			Advance(World);
+		}
+		else if (Stage == 2)
+		{
+			bSawRagdoll |= Physics->IsRagdolling();
+			if (ASC->HasMatchingGameplayTag(GarLocomotionActionTags::GettingDown))
+			{
+				Test->TestTrue(TEXT("Down state follows an actual ragdoll"), bSawRagdoll);
+				Test->TestFalse(TEXT("Physics ragdoll ends after the down-state handoff"), Physics->IsRagdolling());
+				bStayedDown = true;
+				Advance(World);
+			}
+			else if (Elapsed > 8.0f || (Elapsed > 0.1f && !Physics->IsRagdolling()))
+			{
+				Test->AddError(TEXT("Settled ragdoll did not enter GettingDown"));
+				return true;
+			}
+		}
+		else if (Stage == 3)
+		{
+			bStayedDown &= ASC->HasMatchingGameplayTag(GarLocomotionActionTags::GettingDown)
+				&& !ASC->HasMatchingGameplayTag(GarLocomotionActionTags::GettingUp) && !Physics->IsRagdolling();
+			if (Elapsed < 3.0f) return false;
+			Test->TestTrue(TEXT("No-input wait preserves the down state for three seconds"), bStayedDown);
+			Test->TestTrue(TEXT("Down state keeps the lying stance"), Pawn->GetMover()->GetStance().MatchesTag(GarStanceTags::Lying));
+			Input->InjectInputForAction(JumpAction.Get(), FInputActionValue(true), {}, {});
+			Advance(World);
+		}
+		else if (Stage == 4)
+		{
+			if (ASC->HasMatchingGameplayTag(GarLocomotionActionTags::GettingUp))
+			{
+				Input->InjectInputForAction(JumpAction.Get(), FInputActionValue(false), {}, {});
+				Test->TestFalse(TEXT("Jump cancels the down state"), ASC->HasMatchingGameplayTag(GarLocomotionActionTags::GettingDown));
+				Advance(World);
+			}
+			else if (Elapsed > 1.0f)
+			{
+				Test->AddError(TEXT("Shipped jump input did not activate GettingUp"));
+				return true;
+			}
+		}
+		else if (Stage == 5 && Elapsed > 5.0f)
+		{
+			Test->TestFalse(TEXT("Get-up montage finishes"), ASC->HasMatchingGameplayTag(GarLocomotionActionTags::GettingUp));
+			Test->TestFalse(TEXT("No down state remains after getting up"), ASC->HasMatchingGameplayTag(GarLocomotionActionTags::GettingDown));
+			Test->TestTrue(TEXT("Standing stance returns after jump recovery"), Pawn->GetMover()->GetStance() == GarStanceTags::Standing);
+			Test->TestTrue(TEXT("Recovered capsule remains above floor"), Pawn->GetActorLocation().Z
+				- Pawn->GetCapsule()->GetScaledCapsuleHalfHeight() > FGarPhysicsControlPIECommand::FloorHeight - 3.0);
+			if (++CompletedCycles == 2)
+			{
+				// Exercise the tag-driven observer path used by proxies, without running
+				// a ragdoll ability and without relying on animation evaluation.
+				Pawn->GetMesh()->SetComponentTickEnabled(false);
+				bPausedMeshTick = true;
+				ASC->AddLooseGameplayTag(GarLocomotionActionTags::Unconsious);
+				Advance(World);
+				return false;
+			}
+			bSawRagdoll = false;
+			Stage = 1;
+			StageStarted = World->GetTimeSeconds();
+		}
+		else if (Stage == 6 && Elapsed > 0.2f)
+		{
+			Test->TestTrue(TEXT("Tag-driven task starts physics without animation ticks"), Physics->IsRagdolling());
+			ASC->RemoveLooseGameplayTag(GarLocomotionActionTags::Unconsious);
+			Advance(World);
+		}
+		else if (Stage == 7)
+		{
+			if (Physics->IsRagdolling() && Elapsed < 1.0f) return false;
+			Test->TestFalse(TEXT("Tag removal stops physics before visual epilogue finishes"), Physics->IsRagdolling());
+			ASC->AddLooseGameplayTag(GarLocomotionActionTags::Unconsious);
+			Advance(World);
+		}
+		else if (Stage == 8 && Elapsed > 0.2f)
+		{
+			Test->TestTrue(TEXT("Returning tag restarts a task during its visual epilogue"), Physics->IsRagdolling());
+			ASC->RemoveLooseGameplayTag(GarLocomotionActionTags::Unconsious);
+			Advance(World);
+		}
+		else if (Stage == 9 && Elapsed > 1.0f)
+		{
+			Test->TestFalse(TEXT("Repeated tag removal leaves physics ragdoll stopped"), Physics->IsRagdolling());
+			Pawn->GetMesh()->SetComponentTickEnabled(true);
+			bPausedMeshTick = false;
+			return true;
+		}
+		return false;
+	}
+
+private:
+	void Advance(UWorld* World) { ++Stage; StageStarted = World->GetTimeSeconds(); }
+	FAutomationTestBase* Test;
+	FGarSimulatedMeshMoveWarnings MeshMoveWarnings;
+	TWeakObjectPtr<AGarCharacter> Character;
+	TWeakObjectPtr<UEnhancedInputLocalPlayerSubsystem> Input;
+	TWeakObjectPtr<UInputAction> JumpAction;
+	double Started = FPlatformTime::Seconds();
+	float StageStarted = 0.0f;
+	int32 Stage = 0;
+	int32 CompletedCycles = 0;
+	bool bSawRagdoll = false;
+	bool bStayedDown = false;
+	bool bPausedMeshTick = false;
+};
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGarDownStateRecoveryTest, "GAR.PhysicsControl.DownStateRecovery",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FGarDownStateRecoveryTest::RunTest(const FString& Parameters)
+{
+	CreateGarPhysicsControlTestWorld();
+	ADD_LATENT_AUTOMATION_COMMAND(FStartPIECommand(false));
+	FAutomationTestFramework::Get().EnqueueLatentCommand(MakeShared<FGarDownStateRecoveryCommand>(this));
+	ADD_LATENT_AUTOMATION_COMMAND(FEndPlayMapCommand());
+	return true;
 }
 
 bool FGarPhysicsControlPIETest::RunTest(const FString& Parameters)

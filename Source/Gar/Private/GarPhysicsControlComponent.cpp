@@ -81,21 +81,11 @@ void UGarPhysicsControlComponent::TickComponent(float DeltaTime, ELevelTick Tick
 			InitializeControls();
 		}
 
-		const FGameplayTag RagdollTag = FindRagdollTag();
-		if (RagdollTag.IsValid())
+		// RagdollingTask owns entry/exit. Physics Control only advances that state;
+		// do not independently infer another lifecycle from the ability tags.
+		if (bRagdolling)
 		{
-			if (!bRagdolling)
-			{
-				StartRagdoll(RagdollTag);
-			}
-			if (bRagdolling)
-			{
-				TickRagdoll(DeltaTime);
-			}
-		}
-		else if (bRagdolling)
-		{
-			StopRagdoll();
+			TickRagdoll(DeltaTime);
 		}
 
 		if (!bRagdolling)
@@ -405,45 +395,6 @@ bool UGarPhysicsControlComponent::InitializeControls()
 		UpdatePhysicalAnimation();
 	}
 	return bControlsInitialized;
-}
-
-FGameplayTag UGarPhysicsControlComponent::FindRagdollTag() const
-{
-	if (!Character.IsValid())
-	{
-		return FGameplayTag::EmptyTag;
-	}
-
-	const UAbilitySystemComponent* AbilitySystem = Character->GetAbilitySystemComponent();
-	if (!AbilitySystem)
-	{
-		return FGameplayTag::EmptyTag;
-	}
-
-	FGameplayTag BestTag;
-	int32 BestSpecificity = INDEX_NONE;
-	for (const TPair<FGameplayTag, FGarPhysicsControlRagdollSettings>& Pair : RagdollSettingsByTag)
-	{
-		if (AbilitySystem->HasMatchingGameplayTag(Pair.Key))
-		{
-			const int32 Specificity = Pair.Key.ToString().Len();
-			if (Specificity > BestSpecificity)
-			{
-				BestTag = Pair.Key;
-				BestSpecificity = Specificity;
-			}
-		}
-	}
-
-	if (DefaultRagdollTag.IsValid() && AbilitySystem->HasMatchingGameplayTag(DefaultRagdollTag))
-	{
-		const int32 Specificity = DefaultRagdollTag.ToString().Len();
-		if (Specificity > BestSpecificity)
-		{
-			BestTag = DefaultRagdollTag;
-		}
-	}
-	return BestTag;
 }
 
 FName UGarPhysicsControlComponent::FindControlProfile(const FGameplayTagContainer& GameplayTags) const

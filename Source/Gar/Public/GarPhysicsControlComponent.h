@@ -188,7 +188,6 @@ public:
 
 private:
 	bool InitializeControls();
-	FGameplayTag FindRagdollTag() const;
 	FName FindControlProfile(const FGameplayTagContainer& GameplayTags) const;
 	const FGarPhysicsControlRagdollSettings* GetCurrentRagdollSettings() const;
 	void UpdatePhysicalAnimation();

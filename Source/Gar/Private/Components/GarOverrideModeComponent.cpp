@@ -43,6 +43,24 @@ void UGarOverrideModeComponent::EndCurrentRagdollingTask()
 	}
 }
 
+UGarRagdollingTask* UGarOverrideModeComponent::StartRagdollingTask(const FGameplayTag& RagdollTag)
+{
+	const auto* TaskClass = OverrideClassMap.Find(RagdollTag);
+	if (!TaskClass || !*TaskClass || !(*TaskClass)->IsChildOf(UGarRagdollingTask::StaticClass())) return nullptr;
+
+	if (CurrentOverrideTag == RagdollTag && CurrentOverrideTask.IsValid())
+	{
+		// Re-entering the same task may interrupt its visual blend-out.
+		if (!CurrentOverrideTask->IsActive()) CurrentOverrideTask->Begin();
+	}
+	else
+	{
+		ChangeOverrideTask(RagdollTag);
+	}
+	auto* Task = Cast<UGarRagdollingTask>(CurrentOverrideTask.Get());
+	return CurrentOverrideTag == RagdollTag && Task && Task->IsActive() ? Task : nullptr;
+}
+
 void UGarOverrideModeComponent::ChangeOverrideTask(const FGameplayTag& NewOverrideMode)
 {
 	if (CurrentOverrideTask.IsValid())
@@ -108,6 +126,11 @@ void UGarOverrideModeComponent::OnOwnerTick_Implementation(float DeltaTime)
 	if (CurrentOverrideTag != OverrideMode)
 	{
 		ChangeOverrideTask(OverrideMode);
+	}
+	else if (OverrideMode.IsValid() && CurrentOverrideTask.IsValid() && !CurrentOverrideTask->IsActive())
+	{
+		// A replicated tag can return before the previous visual epilogue finishes.
+		CurrentOverrideTask->Begin();
 	}
 
 	if (CurrentOverrideTask.IsValid())
