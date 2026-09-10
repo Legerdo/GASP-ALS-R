@@ -19,6 +19,16 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GarGameplayAbility_Ragdolling)
 
+FVector UGarGameplayAbility_Ragdolling::GetRagdollVelocity() const
+{
+	FVector Velocity = FVector::ZeroVector;
+	if (const AGarCharacter* Character = GetGarCharacterFromActorInfo())
+	{
+		Character->GetPhysicsControl()->GetTopBodyVelocity(Velocity);
+	}
+	return Velocity;
+}
+
 UGarGameplayAbility_Ragdolling::UGarGameplayAbility_Ragdolling(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	SetAssetTags(FGameplayTagContainer(GarLocomotionActionTags::Unconsious));

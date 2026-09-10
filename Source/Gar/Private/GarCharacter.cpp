@@ -32,6 +32,15 @@
 namespace GarCharacterConstants
 {
 	constexpr auto TeleportDistanceThresholdSquared{FMath::Square(50.0f)};
+
+	void UpdateMeshOffset(USkeletalMeshComponent* Mesh, const FVector& RelativeLocation)
+	{
+		// Change the animation target frame without teleporting simulated bodies. Also keep
+		// Mover's visual offset synchronized, avoiding its unflagged skeletal mesh move.
+		const FTransform ParentTransform = Mesh->GetAttachParent()->GetSocketTransform(Mesh->GetAttachSocketName());
+		const FVector Delta = ParentTransform.TransformPosition(RelativeLocation) - Mesh->GetComponentLocation();
+		Mesh->MoveComponent(Delta, Mesh->GetComponentQuat(), false, nullptr, MOVECOMP_SkipPhysicsMove);
+	}
 }
 
 FName AGarCharacter::SkeletalMeshComponentName(TEXT("CharacterMesh"));
@@ -290,6 +299,28 @@ void AGarCharacter::ProduceInput_Implementation(int32 SimTimeMs, FMoverInputCmdC
 	// targeting systems to happen /outside/ of the system, i.e, here. But I can think of scenarios where that may not be ideal too.
 
 	auto& CharacterInputs{InputCmd.InputCollection.FindOrAddMutableDataByType<FGarCharacterMoverInputs>()};
+	CharacterInputs.bHasRagdollTransform = PhysicsControl->GetRagdollTransform(CharacterInputs.RagdollTransform);
+	if (CharacterInputs.bHasRagdollTransform)
+	{
+		// Capture before controller/block-input early returns. Replay consumes this snapshot,
+		// never a fresh read of the local skeletal mesh from within Mover simulation.
+		CharacterInputs.SuggestedMovementMode = NAME_None;
+		const FName Mode = CharacterMover->GetMovementModeName();
+		if (Mode != TEXT("Ragdolling") && Mode != TEXT("Ragdolling In Air"))
+		{
+			CharacterInputs.SuggestedMovementMode = TEXT("Ragdolling");
+		}
+		CharacterInputs.SetMoveInput(EMoveInputType::DirectionalIntent, FVector::ZeroVector);
+		CharacterInputs.OrientationIntent = CharacterInputs.RagdollTransform.GetRotation().GetForwardVector();
+		CharacterInputs.bUsingMovementBase = false;
+		CharacterInputs.MovementBase = nullptr;
+		CharacterInputs.MovementBaseBoneName = NAME_None;
+		CharacterInputs.bIsJumpPressed = false;
+		CharacterInputs.bIsJumpJustPressed = false;
+		CharacterInputs.Stance = InputStance;
+		bIsJumpJustPressed = false;
+		return;
+	}
 
 	if (GetController() == nullptr)
 	{
@@ -413,7 +444,12 @@ void AGarCharacter::Tick(const float DeltaTime)
 	TryAdjustControllRotation(DeltaTime);
 
 	RefreshEyeHeight(DeltaTime);
-	RefreshCapsuleSize(DeltaTime);
+	// Ragdoll Mover positions the capsule from the physics pose. Stance resizing must not
+	// queue competing teleports or move the visual root while physics is driving the body.
+	if (!PhysicsControl->IsRagdolling())
+	{
+		RefreshCapsuleSize(DeltaTime);
+	}
 	CheckCanUnCrouchIfNeeded();
 	CheckCanCrouchIfNeeded();
 
@@ -824,7 +860,7 @@ bool AGarCharacter::UpdateMainCapsule(float DeltaTime, float TargetHalfHeight, f
 				auto Loc{Mesh->GetRelativeLocation()};
 				Loc.Z = InitialMeshZ
 					+ (HalfHeight < Radius ? InitialCapsuleRadius - Radius : InitialCapsuleHalfHeight - HalfHeight) * Scale;
-				Mesh->SetRelativeLocation(Loc);
+				GarCharacterConstants::UpdateMeshOffset(Mesh, Loc);
 			}
 		}
 		else
@@ -841,6 +877,7 @@ bool AGarCharacter::UpdateMainCapsule(float DeltaTime, float TargetHalfHeight, f
 				Location.Z = InitialMeshZ + (HalfHeight < Radius ? InitialCapsuleRadius - Radius : InitialCapsuleHalfHeight - HalfHeight) * Scale;
 				MoverVisualComponentOffset.SetLocation(Location);
 				CharacterMover->SetBaseVisualComponentTransform(MoverVisualComponentOffset);
+				GarCharacterConstants::UpdateMeshOffset(Mesh, Location);
 			}
 		}
 		return true;

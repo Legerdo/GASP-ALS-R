@@ -5,10 +5,14 @@
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "DefaultMovementSet/InstantMovementEffects/BasicInstantMovementEffects.h"
 #include "Engine/Canvas.h"
 #include "Engine/Engine.h"
 #include "PhysicsEngine/BodyInstance.h"
+#include "PhysicsEngine/PhysicsAsset.h"
+#include "PhysicsEngine/SkeletalBodySetup.h"
+#include "PhysicsControlBPLibrary.h"
+#include "UObject/StructOnScope.h"
+#include "UObject/UnrealType.h"
 #include "GarAnimationInstance.h"
 #include "GarCharacter.h"
 #include "GarCharacterMoverComponent.h"
@@ -22,6 +26,25 @@
 namespace GarPhysicsControl
 {
 	const FName AllSetName{TEXTVIEW("All")};
+
+	void SetLegCollisionEnabled(USkeletalMeshComponent* Mesh, const TArray<FName>& Left, const TArray<FName>& Right, bool bEnabled)
+	{
+		// UE 5.8 exposes these sample functions to Blueprint but not its public C++ API.
+		// Invoke the reflected API with named, type-checked parameters; no engine patch required.
+		UObject* Library = GetMutableDefault<UPhysicsControlBPLibrary>();
+		UFunction* Function = Library->FindFunction(bEnabled ? TEXT("EnableCollisionBetweenBodyArrays") : TEXT("DisableCollisionBetweenBodyArrays"));
+		if (!ensure(Function)) return;
+		FStructOnScope Params(Function);
+		for (const FName Name : {FName(TEXT("FirstComponent")), FName(TEXT("SecondComponent"))})
+		{
+			CastFieldChecked<FObjectPropertyBase>(Function->FindPropertyByName(Name))->SetObjectPropertyValue_InContainer(Params.GetStructMemory(), Mesh);
+		}
+		FArrayProperty* LeftProperty = CastFieldChecked<FArrayProperty>(Function->FindPropertyByName(TEXT("FirstBoneNames")));
+		FArrayProperty* RightProperty = CastFieldChecked<FArrayProperty>(Function->FindPropertyByName(TEXT("SecondBoneNames")));
+		LeftProperty->CopyCompleteValue(LeftProperty->ContainerPtrToValuePtr<void>(Params.GetStructMemory()), &Left);
+		RightProperty->CopyCompleteValue(RightProperty->ContainerPtrToValuePtr<void>(Params.GetStructMemory()), &Right);
+		Library->ProcessEvent(Function, Params.GetStructMemory());
+	}
 }
 
 UGarPhysicsControlComponent::UGarPhysicsControlComponent()
@@ -75,6 +98,11 @@ void UGarPhysicsControlComponent::TickComponent(float DeltaTime, ELevelTick Tick
 			StopRagdoll();
 		}
 
+		if (GFrameCounter > RestoreProfileAfterFrame)
+		{
+			CurrentControlProfileName = NAME_None;
+			RestoreProfileAfterFrame = MAX_uint64;
+		}
 		if (!bRagdolling)
 		{
 			UpdatePhysicalAnimation();
@@ -155,6 +183,11 @@ bool UGarPhysicsControlComponent::StartRagdoll(const FGameplayTag& RagdollTag)
 	{
 		return false;
 	}
+	if (!ApplyProfile(Settings->ControlProfileName))
+	{
+		return false;
+	}
+	RestoreProfileAfterFrame = MAX_uint64;
 
 	CurrentRagdollTag = RagdollTag;
 	bRagdolling = true;
@@ -193,27 +226,21 @@ bool UGarPhysicsControlComponent::StartRagdoll(const FGameplayTag& RagdollTag)
 
 	if (UCapsuleComponent* Capsule = Character->GetCapsule())
 	{
-		Capsule->SetCollisionObjectType(ECC_Pawn);
-		Capsule->SetCollisionResponseToAllChannels(ECR_Ignore);
-		Capsule->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-		Capsule->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
-		Capsule->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+		PreviousCapsuleResponses = Capsule->GetCollisionResponseToChannels();
+		Capsule->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	}
-
-	if (USkeletalMeshComponent* Mesh = Character->GetMesh(); Mesh && Character->HasAuthority() && !Character->IsLocallyControlled())
+	if (UCapsuleComponent* ProneCapsule = Character->GetProneCapsule())
 	{
-		PreviousVisibilityBasedAnimTickOption = static_cast<uint8>(Mesh->VisibilityBasedAnimTickOption);
-		Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
-		bOverrodeVisibilityBasedAnimTickOption = true;
+		PreviousProneCapsuleResponses = ProneCapsule->GetCollisionResponseToChannels();
+		ProneCapsule->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	}
 
-	if (Settings->ControlProfileName.IsValid())
-	{
-		InvokeControlProfile(Settings->ControlProfileName);
-		CurrentControlProfileName = Settings->ControlProfileName;
-	}
-
-	SetRagdollBodyState(EPhysicsMovementType::Simulated, ECollisionEnabled::QueryAndPhysics, Settings->GravityMultiplier, Settings->bEnableControlsDuringRagdoll);
+	UpdateJointConstraints(true);
+	// Profile modifiers are applied on the next PCC tick. Simulate immediately so an impulse
+	// delivered by the event that started ragdoll is not lost (same as the sample).
+	Character->GetMesh()->SetAllBodiesSimulatePhysics(true);
+	Character->GetMesh()->WakeAllRigidBodies();
+	Character->GetMover()->QueueNextMode(TEXT("Ragdolling"));
 	RefreshRagdollAnimation(true);
 	return true;
 }
@@ -225,55 +252,34 @@ void UGarPhysicsControlComponent::StopRagdoll()
 		return;
 	}
 
-	FTransform TopBodyTransform = Character->GetMover()->GetUpdatedComponentTransform();
-	const bool bHasTopBodyTransform = GetTopBodyTransform(TopBodyTransform);
-
 	if (RagdollingAnimInstance.IsValid())
 	{
 		RagdollingAnimInstance->Freeze();
 		RefreshRagdollAnimation(false);
 	}
 
-	if (RagdollStatus.ElapsedTime > RagdollStatus.StartBlendTime && bHasTopBodyTransform)
-	{
-		const FRotator TopRotation = TopBodyTransform.Rotator();
-		FRotator TargetRotation = Character->GetMover()->GetUpdatedComponentTransform().GetRotation().Rotator();
-		const FVector FacingDirection = TopRotation.RotateVector(
-			FMath::Abs(TopRotation.RotateVector(FVector::ForwardVector).GetSafeNormal2D().Dot(FVector::UpVector)) > 0.5f
-				? (RagdollStatus.bFacingUpward ? FVector::RightVector : FVector::LeftVector)
-				: (RagdollStatus.bFacingUpward ? FVector::BackwardVector : FVector::ForwardVector));
-		TargetRotation.Yaw = UGarMath::DirectionToAngleXY(FacingDirection.GetSafeNormal2D());
-
-		auto TeleportEffect = MakeShared<FTeleportEffect>();
-		TeleportEffect->TargetLocation = Character->GetMover()->GetUpdatedComponentTransform().GetLocation();
-		TeleportEffect->TargetRotation = TargetRotation;
-		Character->GetMover()->QueueInstantMovementEffect(TeleportEffect);
-
-		if (RagdollingAnimInstance.IsValid())
-		{
-			const FReferenceSkeleton& ReferenceSkeleton = Character->GetMesh()->GetSkeletalMeshAsset()->GetRefSkeleton();
-			const int32 TopBoneIndex = ReferenceSkeleton.FindBoneIndex(TopBoneName);
-			FPoseSnapshot& FinalPose = RagdollingAnimInstance->GetFinalPoseSnapshot();
-			if (FinalPose.bIsValid && TopBoneIndex != INDEX_NONE && FinalPose.LocalTransforms.IsValidIndex(TopBoneIndex))
-			{
-				FinalPose.LocalTransforms[TopBoneIndex] = TopBodyTransform.GetRelativeTransform(Character->GetMesh()->GetComponentTransform());
-			}
-		}
-	}
-
-	SetRagdollBodyState(EPhysicsMovementType::Kinematic, ECollisionEnabled::QueryOnly, 1.0f, false);
 	RestoreCapsuleCollision();
-
-	if (USkeletalMeshComponent* Mesh = Character->GetMesh(); Mesh && bOverrodeVisibilityBasedAnimTickOption)
-	{
-		Mesh->VisibilityBasedAnimTickOption = static_cast<EVisibilityBasedAnimTickOption>(PreviousVisibilityBasedAnimTickOption);
-		bOverrodeVisibilityBasedAnimTickOption = false;
-	}
+	UpdateJointConstraints(false);
 
 	bRagdolling = false;
 	CurrentRagdollTag = FGameplayTag::EmptyTag;
 	CurrentControlProfileName = NAME_None;
 	RagdollStatus = {};
+	UpdatePhysicalAnimation();
+	// Switching the ABP to the saved pose produces a discontinuity in target velocity. Suppress
+	// feed-forward for one PCC update; the next update restores the authored profile values.
+	for (const FName Name : GetControlNamesInSet(GarPhysicsControl::AllSetName))
+	{
+		FPhysicsControlData Data;
+		if (GetControlData(Name, Data))
+		{
+			Data.LinearTargetVelocityMultiplier = 0.0f;
+			Data.AngularTargetVelocityMultiplier = 0.0f;
+			SetControlData(Name, Data);
+		}
+	}
+	RestoreProfileAfterFrame = GFrameCounter;
+	Character->GetMover()->QueueNextMode(Character->GetMover()->StartingMovementMode);
 }
 
 void UGarPhysicsControlComponent::SetRagdollingTaskActive(const bool bActive)
@@ -318,6 +324,33 @@ bool UGarPhysicsControlComponent::GetTopBodyVelocity(FVector& OutVelocity) const
 	return false;
 }
 
+bool UGarPhysicsControlComponent::GetRagdollTransform(FTransform& OutTransform) const
+{
+	if (!bRagdolling || !GetTopBodyTransform(OutTransform))
+	{
+		return false;
+	}
+	const USkeletalMeshComponent* Mesh = Character->GetMesh();
+	const FVector Up = Character->GetMover()->GetUpDirection();
+	FVector Forward = Character->GetActorForwardVector();
+	if (RagdollStatus.ElapsedTime > RagdollStatus.StartBlendTime && Mesh->GetBoneIndex(ChestBoneName) != INDEX_NONE)
+	{
+		const FTransform Chest = Mesh->GetBoneTransform(ChestBoneName, RTS_World);
+		Forward = Chest.GetLocation() - OutTransform.GetLocation();
+		if (FVector::DotProduct(Chest.GetRotation().GetRightVector(), Up) > 0.0f)
+		{
+			Forward *= -1.0f;
+		}
+		Forward = FVector::VectorPlaneProject(Forward, Up).GetSafeNormal();
+		if (Forward.IsNearlyZero())
+		{
+			Forward = Character->GetActorForwardVector();
+		}
+	}
+	OutTransform.SetRotation(FRotationMatrix::MakeFromZX(Up, Forward).ToQuat());
+	return true;
+}
+
 void UGarPhysicsControlComponent::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DisplayInfo, float& HorizontalLocation, float& VerticalLocation) const
 {
 	const float Scale = FMath::Min(Canvas->SizeX / (1280.0f * Canvas->GetDPIScale()), Canvas->SizeY / (720.0f * Canvas->GetDPIScale()));
@@ -349,10 +382,42 @@ bool UGarPhysicsControlComponent::InitializeControls()
 		return false;
 	}
 
-	bControlsInitialized = CreateControlsAndBodyModifiersFromPhysicsControlAsset(Character->GetMesh(), nullptr, NAME_None);
+	USkeletalMeshComponent* Mesh = Character->GetMesh();
+	if (!Mesh || !Mesh->GetBodyInstance(TopBoneName) || !Mesh->GetBodyInstance(TopBoneName)->IsValidBodyInstance())
+	{
+		return false;
+	}
+	// Body modifiers change shape collision, not the component-level physics filter.
+	// CharacterMesh defaults to QueryOnly, which prevents Chaos simulation altogether.
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	// Mover owns the component transform; Chaos owns only the bodies. Letting a simulated
+	// pelvis also move the mesh component would move its own world-space animation targets.
+	Mesh->PhysicsTransformUpdateMode = EPhysicsTransformUpdateMode::ComponentTransformIsKinematic;
+	Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+	Mesh->bEnableUpdateRateOptimizations = false;
+	bControlsInitialized = CreateControlsAndBodyModifiersFromPhysicsControlAsset(Mesh, nullptr, NAME_None)
+		&& !GetControlNamesInSet(GarPhysicsControl::AllSetName).IsEmpty()
+		&& !GetBodyModifierNamesInSet(GarPhysicsControl::AllSetName).IsEmpty();
 	if (!bControlsInitialized)
 	{
 		UE_LOG(LogGar, Error, TEXT("Unable to create Physics Control records for %s"), *GetPathName());
+		DestroyAllControlsAndBodyModifiers();
+	}
+	else
+	{
+		for (const USkeletalBodySetup* Body : Mesh->GetPhysicsAsset()->SkeletalBodySetups)
+		{
+			if (Body->BoneName == TEXT("thigh_l") || Mesh->BoneIsChildOf(Body->BoneName, TEXT("thigh_l")))
+			{
+				LeftLegBones.Add(Body->BoneName);
+			}
+			if (Body->BoneName == TEXT("thigh_r") || Mesh->BoneIsChildOf(Body->BoneName, TEXT("thigh_r")))
+			{
+				RightLegBones.Add(Body->BoneName);
+			}
+		}
+		UpdateJointConstraints(false);
+		UpdatePhysicalAnimation();
 	}
 	return bControlsInitialized;
 }
@@ -402,7 +467,7 @@ FName UGarPhysicsControlComponent::FindControlProfile(const FGameplayTagContaine
 	int32 BestSpecificity = INDEX_NONE;
 	for (const TPair<FGameplayTag, FName>& Pair : ControlProfileByTag)
 	{
-		if (Pair.Value.IsValid() && GameplayTags.HasTag(Pair.Key))
+		if (!Pair.Value.IsNone() && GameplayTags.HasTag(Pair.Key))
 		{
 			const int32 Specificity = Pair.Key.ToString().Len();
 			if (Specificity > BestSpecificity)
@@ -441,11 +506,10 @@ void UGarPhysicsControlComponent::UpdatePhysicalAnimation()
 	const FName DesiredProfile = FindControlProfile(GameplayTags);
 	if (DesiredProfile != CurrentControlProfileName)
 	{
-		if (DesiredProfile.IsValid() && !InvokeControlProfile(DesiredProfile))
+		if (ApplyProfile(DefaultControlProfileName) && DesiredProfile != DefaultControlProfileName)
 		{
-			UE_LOG(LogGar, Warning, TEXT("Physics Control profile '%s' was not found on %s"), *DesiredProfile.ToString(), *GetPathName());
+			ApplyProfile(DesiredProfile);
 		}
-		CurrentControlProfileName = DesiredProfile;
 	}
 }
 
@@ -464,13 +528,13 @@ void UGarPhysicsControlComponent::UpdateCurveDrivenControls()
 
 	for (const FGarPhysicsControlCurveSetMapping& Mapping : CurveSetMappings)
 	{
-		if (!Mapping.CurveName.IsValid())
+		if (Mapping.CurveName.IsNone())
 		{
 			continue;
 		}
 
 		const float LockAmount = AnimationInstance->GetCurveValueClamped01(Mapping.CurveName);
-		if (Mapping.ControlSetName.IsValid())
+		if (!Mapping.ControlSetName.IsNone())
 		{
 			FPhysicsControlSparseMultiplier Multiplier;
 			Multiplier.LinearStrengthMultiplier = FVector(1.0f - LockAmount);
@@ -484,7 +548,7 @@ void UGarPhysicsControlComponent::UpdateCurveDrivenControls()
 			SetControlSparseMultipliersInSet(Mapping.ControlSetName, Multiplier);
 		}
 
-		if (Mapping.BodyModifierSetName.IsValid())
+		if (!Mapping.BodyModifierSetName.IsNone())
 		{
 			SetBodyModifiersInSetPhysicsBlendWeight(Mapping.BodyModifierSetName, 1.0f - LockAmount);
 		}
@@ -506,15 +570,13 @@ void UGarPhysicsControlComponent::TickRagdoll(const float DeltaTime)
 		return;
 	}
 
-	RagdollStatus.bGrounded = Character->HasMatchingGameplayTag(GarLocomotionModeTags::Grounded);
-	FTransform TopBodyTransform;
-	const bool bHasTopBodyTransform = GetTopBodyTransform(TopBodyTransform);
+	RagdollStatus.bGrounded = Mover->GetLocomotionMode() == GarLocomotionModeTags::Grounded;
 
 	for (FBodyInstance* Body : Mesh->Bodies)
 	{
 		if (Body && Body->IsInstanceSimulatingPhysics() && Settings->MaxBodySpeed > 0.0f)
 		{
-			const FVector Velocity = Body->GetUnrealWorldVelocity_AssumesLocked();
+			const FVector Velocity = Body->GetUnrealWorldVelocity();
 			if (Velocity.Size() > Settings->MaxBodySpeed)
 			{
 				Body->SetLinearVelocity(Velocity.GetClampedToMaxSize(Settings->MaxBodySpeed), false);
@@ -522,25 +584,19 @@ void UGarPhysicsControlComponent::TickRagdoll(const float DeltaTime)
 		}
 	}
 
-	if (bHasTopBodyTransform)
+	if (Mesh->GetBoneIndex(ChestBoneName) != INDEX_NONE)
 	{
-		const FVector UpDirection = Mover->GetUpDirection();
-		const FRotator TopRotation = TopBodyTransform.Rotator();
-		const FVector TopDirection = TopRotation.RotateVector(FVector::ForwardVector);
-		if (FMath::Abs(TopDirection.Dot(UpDirection)) > 0.7f)
-		{
-			const float FacingDot = TopRotation.RotateVector(FVector::RightVector).Dot(Character->GetActorForwardVector());
-			RagdollStatus.bFacingUpward = RagdollStatus.bFacingUpward ? FacingDot <= 0.2f : FacingDot < -0.2f;
-		}
-		else
-		{
-			const float FacingDot = TopDirection.Dot(Character->GetActorForwardVector());
-			RagdollStatus.bFacingUpward = RagdollStatus.bFacingUpward ? FacingDot <= 0.2f : FacingDot < -0.2f;
-		}
+		const FTransform Chest = Mesh->GetBoneTransform(ChestBoneName, RTS_World);
+		const float FacingDot = FVector::DotProduct(Chest.GetRotation().GetRightVector(), Mover->GetUpDirection());
+		// Use the physical chest axis, independent of the capsule orientation that Mover is following.
+		if (FacingDot > 0.2f) RagdollStatus.bFacingUpward = true;
+		else if (FacingDot < -0.2f) RagdollStatus.bFacingUpward = false;
 	}
 
 	RefreshRagdollAnimation(true);
-	RagdollStatus.RootBodySpeed = Mover->GetVelocity().Size();
+	FVector RootVelocity = FVector::ZeroVector;
+	GetTopBodyVelocity(RootVelocity);
+	RagdollStatus.RootBodySpeed = RootVelocity.Size();
 
 	if (Settings->bAllowFreeze && RagdollStatus.bGrounded)
 	{
@@ -579,7 +635,8 @@ void UGarPhysicsControlComponent::TickRagdoll(const float DeltaTime)
 
 	if (RagdollStatus.bFrozen)
 	{
-		SetRagdollBodyState(EPhysicsMovementType::Kinematic, ECollisionEnabled::QueryAndPhysics, Settings->GravityMultiplier, false);
+		SetControlsInSetEnabled(GarPhysicsControl::AllSetName, false);
+		SetBodyModifiersInSetMovementType(GarPhysicsControl::AllSetName, EPhysicsMovementType::Kinematic);
 		if (RagdollingAnimInstance.IsValid())
 		{
 			RagdollingAnimInstance->Freeze();
@@ -602,29 +659,53 @@ void UGarPhysicsControlComponent::RefreshRagdollAnimation(const bool bActive)
 	}
 }
 
-void UGarPhysicsControlComponent::SetRagdollBodyState(const EPhysicsMovementType MovementType, const ECollisionEnabled::Type CollisionType,
-	const float GravityMultiplier, const bool bEnableControls)
+bool UGarPhysicsControlComponent::ApplyProfile(const FName ProfileName)
 {
-	if (!bControlsInitialized)
+	if (ProfileName.IsNone() || !InvokeControlProfile(ProfileName))
 	{
-		return;
+		UE_LOG(LogGar, Error, TEXT("Missing Physics Control profile '%s' on %s"), *ProfileName.ToString(), *GetPathName());
+		return false;
 	}
+	CurrentControlProfileName = ProfileName;
+	return true;
+}
 
-	SetControlsInSetEnabled(GarPhysicsControl::AllSetName, bEnableControls);
-	SetBodyModifiersInSetMovementType(GarPhysicsControl::AllSetName, MovementType);
-	SetBodyModifiersInSetCollisionType(GarPhysicsControl::AllSetName, CollisionType);
-	SetBodyModifiersInSetGravityMultiplier(GarPhysicsControl::AllSetName, GravityMultiplier);
-	SetBodyModifiersInSetPhysicsBlendWeight(GarPhysicsControl::AllSetName, MovementType == EPhysicsMovementType::Simulated ? 1.0f : 0.0f);
+void UGarPhysicsControlComponent::UpdateJointConstraints(const bool bForRagdoll)
+{
+	USkeletalMeshComponent* Mesh = Character->GetMesh();
+	// The PA still owns joint limits. Use its default limits for ragdoll and free angular
+	// limits for animation, as the sample's "Free" constraint profile does. No legacy drives.
+	Mesh->SetConstraintProfileForAll(NAME_None, true);
+	for (FConstraintInstance* Constraint : Mesh->Constraints)
+	{
+		if (!Constraint) continue;
+		Constraint->SetOrientationDriveTwistAndSwing(false, false);
+		Constraint->SetOrientationDriveSLERP(false);
+		Constraint->SetAngularVelocityDriveTwistAndSwing(false, false);
+		Constraint->SetAngularVelocityDriveSLERP(false);
+		Constraint->SetLinearPositionDrive(false, false, false);
+		Constraint->SetLinearVelocityDrive(false, false, false);
+		if (!bForRagdoll)
+		{
+			Constraint->SetAngularSwing1Limit(ACM_Free, 0.0f);
+			Constraint->SetAngularSwing2Limit(ACM_Free, 0.0f);
+			Constraint->SetAngularTwistLimit(ACM_Free, 0.0f);
+		}
+	}
+	if (!LeftLegBones.IsEmpty() && !RightLegBones.IsEmpty())
+	{
+		GarPhysicsControl::SetLegCollisionEnabled(Mesh, LeftLegBones, RightLegBones, bForRagdoll);
+	}
 }
 
 void UGarPhysicsControlComponent::RestoreCapsuleCollision()
 {
 	if (UCapsuleComponent* Capsule = Character->GetCapsule())
 	{
-		Capsule->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+		Capsule->SetCollisionResponseToChannels(PreviousCapsuleResponses);
 	}
 	if (UCapsuleComponent* ProneCapsule = Character->GetProneCapsule())
 	{
-		ProneCapsule->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+		ProneCapsule->SetCollisionResponseToChannels(PreviousProneCapsuleResponses);
 	}
 }

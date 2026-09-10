@@ -216,7 +216,7 @@ void UGarCharacterMoverComponent::OnMoverPreSimulationTick(const FMoverTimeStep&
 			MARK_PROPERTY_DIRTY_FROM_NAME(ThisClass, Gait, this)
 		}
 #endif
-		if (CharacterInputs->bIsJumpJustPressed && IsValid(Settings))
+		if (!CharacterInputs->bHasRagdollTransform && CharacterInputs->bIsJumpJustPressed && IsValid(Settings))
 		{
 			auto JumpMove = MakeShared<FJumpImpulseEffect>();
 			JumpMove->UpwardsSpeed = CommonSettings->JumpUpwardsSpeed;

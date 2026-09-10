@@ -61,18 +61,11 @@ struct GAR_API FGarPhysicsControlRagdollSettings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|Ragdoll")
 	FName ControlProfileName{TEXTVIEW("Ragdoll")};
 
-	/** Keeps animation-driven controls active while ragdolling. Usually false for a full ragdoll. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|Ragdoll")
-	uint8 bEnableControlsDuringRagdoll : 1{false};
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|Ragdoll", Meta = (ClampMin = 0, ForceUnits = "s"))
 	float StartBlendTime{0.25f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|Ragdoll", Meta = (ClampMin = 0, ForceUnits = "cm/s"))
 	float MaxBodySpeed{5000.0f};
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|Ragdoll", Meta = (ClampMin = 0))
-	float GravityMultiplier{1.0f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|Ragdoll|Freeze")
 	uint8 bAllowFreeze : 1{false};
@@ -128,7 +121,11 @@ public:
 	FName TopBoneName{TEXTVIEW("pelvis")};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|PhysicsControl")
-	FName DefaultControlProfileName;
+	FName DefaultControlProfileName{TEXTVIEW("PhysicalAnimation")};
+
+	/** Sample-style heading is derived from the pelvis-to-chest direction. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|Ragdoll")
+	FName ChestBoneName{TEXTVIEW("spine_05")};
 
 	/** More-specific matching gameplay tags take precedence over less-specific tags. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|PhysicsControl")
@@ -180,6 +177,7 @@ public:
 
 	bool GetTopBodyTransform(FTransform& OutTransform) const;
 	bool GetTopBodyVelocity(FVector& OutVelocity) const;
+	bool GetRagdollTransform(FTransform& OutTransform) const;
 
 	const TArray<FGarPhysicsControlCurveSetMapping>& GetCurveSetMappings() const
 	{
@@ -197,7 +195,8 @@ private:
 	void UpdateCurveDrivenControls();
 	void TickRagdoll(float DeltaTime);
 	void RefreshRagdollAnimation(bool bActive);
-	void SetRagdollBodyState(EPhysicsMovementType MovementType, ECollisionEnabled::Type CollisionType, float GravityMultiplier, bool bEnableControls);
+	bool ApplyProfile(FName ProfileName);
+	void UpdateJointConstraints(bool bForRagdoll);
 	void RestoreCapsuleCollision();
 
 	TWeakObjectPtr<AGarCharacter> Character;
@@ -209,6 +208,9 @@ private:
 	float TimeAfterGroundedAndStopped{0.0f};
 	uint8 bControlsInitialized : 1{false};
 	uint8 bRagdolling : 1{false};
-	uint8 bOverrodeVisibilityBasedAnimTickOption : 1{false};
-	uint8 PreviousVisibilityBasedAnimTickOption{0};
+	FCollisionResponseContainer PreviousCapsuleResponses;
+	FCollisionResponseContainer PreviousProneCapsuleResponses;
+	TArray<FName> LeftLegBones;
+	TArray<FName> RightLegBones;
+	uint64 RestoreProfileAfterFrame{MAX_uint64};
 };

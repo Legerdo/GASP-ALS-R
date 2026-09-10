@@ -16,7 +16,9 @@ public:
 
 	bool operator==(const FGarCharacterMoverInputs& Other) const
 	{
-		return Super::operator==(Other) && RotationMode == Other.RotationMode && Stance == Other.Stance && Gait == Other.Gait;
+		return Super::operator==(Other) && RotationMode == Other.RotationMode && Stance == Other.Stance && Gait == Other.Gait
+			&& bHasRagdollTransform == Other.bHasRagdollTransform
+			&& (!bHasRagdollTransform || RagdollTransform.Equals(Other.RagdollTransform));
 	}
 
 	bool operator!=(const FGarCharacterMoverInputs& Other) const { return !operator==(Other); }
@@ -33,7 +35,16 @@ public:
 		Ar << RotationMode;
 		Ar << Stance;
 		Ar << Gait;
-		bOutSuccess = true;
+		Ar.SerializeBits(&bHasRagdollTransform, 1);
+		if (bHasRagdollTransform)
+		{
+			Ar << RagdollTransform;
+		}
+		else if (Ar.IsLoading())
+		{
+			RagdollTransform = FTransform::Identity;
+		}
+		bOutSuccess = bOutSuccess && !Ar.IsError();
 		return true;
 	}
 	virtual UScriptStruct* GetScriptStruct() const override { return StaticStruct(); }
@@ -59,6 +70,8 @@ public:
 		if(ClosestInputs->RotationMode.IsValid()) RotationMode = ClosestInputs->RotationMode;
 		if(ClosestInputs->Stance.IsValid()) Stance = ClosestInputs->Stance;
 		if(ClosestInputs->Gait.IsValid()) Gait = ClosestInputs->Gait;
+		bHasRagdollTransform = ClosestInputs->bHasRagdollTransform;
+		RagdollTransform = ClosestInputs->RagdollTransform;
 	}
 	virtual void Merge(const FMoverDataStructBase& From) override
 	{
@@ -67,6 +80,8 @@ public:
 		if(TypedFrom.RotationMode.IsValid()) RotationMode = TypedFrom.RotationMode;
 		if(TypedFrom.Stance.IsValid()) Stance = TypedFrom.Stance;
 		if(TypedFrom.Gait.IsValid()) Gait = TypedFrom.Gait;
+		bHasRagdollTransform = TypedFrom.bHasRagdollTransform;
+		RagdollTransform = TypedFrom.RagdollTransform;
 	}
 	//virtual void Decay(float DecayAmount) override { Super::Decay(DecayAmount); }
 
@@ -78,6 +93,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mover)
 	FGameplayTag Gait;
+
+	/** Sample-style physics pose captured OUTSIDE simulation, retained for network replay. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mover)
+	bool bHasRagdollTransform{false};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mover)
+	FTransform RagdollTransform{FTransform::Identity};
 };
 
 template<>

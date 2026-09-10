@@ -18,7 +18,8 @@ public class GAREditor : ModuleRules
 		{
 			PrivateDependencyModuleNames.AddRange(
 			[
-				"BlueprintGraph", "Kismet", "Slate", "SlateCore", "Projects", "UnrealEd"
+				"BlueprintGraph", "Kismet", "Slate", "SlateCore", "Projects", "UnrealEd",
+				"PhysicsControl", "GameplayTags", "GameplayAbilities", "Mover"
 			]);
 		}
 	}

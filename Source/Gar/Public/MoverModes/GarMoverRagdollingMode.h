@@ -1,3 +1,4 @@
+// Copyright (c) SAM-tak. All Rights Reserved.
 #pragma once
 
 #include "CoreMinimal.h"
@@ -5,10 +6,8 @@
 #include "MoverDataModelTypes.h"
 #include "GarMoverRagdollingMode.generated.h"
 
-class UGarMovementSettings;
-
-/**
- * FallingMode: a default movement mode for moving through the air and jumping, typically influenced by gravity and air control
+/** C++ equivalent of the sample's BP_MovementMode_Ragdoll: follow a recorded physics pose.
+ * The two legacy mode names remain for GAR's Grounded/InAir gameplay tags only.
  */
 UCLASS(Blueprintable, BlueprintType)
 class UGarMoverRagdollingMode : public UBaseMovementMode
@@ -16,21 +15,5 @@ class UGarMoverRagdollingMode : public UBaseMovementMode
 	GENERATED_UCLASS_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mover)
-	float MinSpeed{300.0f};
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mover)
-	float MaxSpeed{5000.0f};
-
-	virtual void GenerateMove_Implementation(const FMoverSimContext& SimContext, const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep, FProposedMove& OutProposedMove) const override;
-
 	virtual void SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState) override;
-
-protected:
-	virtual void OnRegistered(const FName ModeName, const FMoverSimContext& SimContext) override;
-	virtual void OnUnregistered(const FMoverSimContext& SimContext) override;
-
-	void CaptureFinalState(USceneComponent* UpdatedComponent, FMovementRecord& Record, const FMoverDefaultSyncState& StartSyncState, const FVector& AngularVelocityDegrees, FMoverDefaultSyncState& OutputSyncState, const float DeltaSeconds) const;
-
-	TObjectPtr<const UGarMovementSettings> Settings;
 };
