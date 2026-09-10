@@ -49,6 +49,19 @@ While active, GAR:
 on `UGarPhysicsControlComponent`'s public ragdoll state. They do not access Physics Control
 records directly.
 
+### Mesh component frame versus physics bodies
+
+`AGarCharacter` creates a `UGarSkeletalMeshComponent` under the existing `CharacterMesh`
+subobject name; Blueprint-facing mesh access remains `USkeletalMeshComponent`.
+When `PhysicsTransformUpdateMode` is `ComponentTransformIsKinematic`, Mover owns the component
+frame even while the root body is simulated. In that case, ordinary component moves use
+`MOVECOMP_SkipPhysicsMove`, including Mover's finalization and visual smoothing updates.
+They do not teleport the ragdoll bodies or change their velocities. Explicit physics teleports
+and normal updates while the root body is kinematic retain the engine's behavior.
+
+The Physics Control runtime tests reject simulated-mesh movement warnings and verify that
+visual-frame changes and finalization preserve simulated body transforms and velocities.
+
 ## Migration from legacy GAR content
 
 `Scripts/MigrateGarPhysicsControl.py` is idempotent and has already been applied to the shipped

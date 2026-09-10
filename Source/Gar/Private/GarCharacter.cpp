@@ -1,4 +1,5 @@
 #include "GarCharacter.h"
+#include "GarSkeletalMeshComponent.h"
 
 #include "MotionWarpingComponent.h"
 #include "TimerManager.h"
@@ -10,8 +11,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Net/Core/PushModel/PushModel.h"
 #include "MoveLibrary/BasedMovementUtils.h"
-#include "PhysicsEngine/PhysicsSettings.h"
-#include "DefaultMovementSet/InstantMovementEffects/BasicInstantMovementEffects.h"
 #include "Components/GarOverlayModeComponent.h"
 #include "Components/GarDeltaOverlayModeComponent.h"
 #include "Components/GarOverrideModeComponent.h"
@@ -33,14 +32,6 @@ namespace GarCharacterConstants
 {
 	constexpr auto TeleportDistanceThresholdSquared{FMath::Square(50.0f)};
 
-	void UpdateMeshOffset(USkeletalMeshComponent* Mesh, const FVector& RelativeLocation)
-	{
-		// Change the animation target frame without teleporting simulated bodies. Also keep
-		// Mover's visual offset synchronized, avoiding its unflagged skeletal mesh move.
-		const FTransform ParentTransform = Mesh->GetAttachParent()->GetSocketTransform(Mesh->GetAttachSocketName());
-		const FVector Delta = ParentTransform.TransformPosition(RelativeLocation) - Mesh->GetComponentLocation();
-		Mesh->MoveComponent(Delta, Mesh->GetComponentQuat(), false, nullptr, MOVECOMP_SkipPhysicsMove);
-	}
 }
 
 FName AGarCharacter::SkeletalMeshComponentName(TEXT("CharacterMesh"));
@@ -79,7 +70,7 @@ AGarCharacter::AGarCharacter(const FObjectInitializer& ObjectInitializer) : Supe
 	ProneCapsule->SetupAttachment(Capsule);
 	ProneCapsule->SetRelativeRotation_Direct({-90.0f, 0.0f, 0.0f});
 
-	Mesh = CreateOptionalDefaultSubobject<USkeletalMeshComponent>(SkeletalMeshComponentName);
+	Mesh = CreateOptionalDefaultSubobject<UGarSkeletalMeshComponent>(SkeletalMeshComponentName);
 	if (Mesh)
 	{
 		Mesh->AlwaysLoadOnClient = true;
@@ -299,6 +290,7 @@ void AGarCharacter::ProduceInput_Implementation(int32 SimTimeMs, FMoverInputCmdC
 	// targeting systems to happen /outside/ of the system, i.e, here. But I can think of scenarios where that may not be ideal too.
 
 	auto& CharacterInputs{InputCmd.InputCollection.FindOrAddMutableDataByType<FGarCharacterMoverInputs>()};
+	CharacterInputs.bBlockCapsuleResize = AbilitySystem->HasMatchingGameplayTag(GarStateFlagTags::BlockUpdateCapsuleSize);
 	CharacterInputs.bHasRagdollTransform = PhysicsControl->GetRagdollTransform(CharacterInputs.RagdollTransform);
 	if (CharacterInputs.bHasRagdollTransform)
 	{
@@ -329,6 +321,8 @@ void AGarCharacter::ProduceInput_Implementation(int32 SimTimeMs, FMoverInputCmdC
 			static const FGarCharacterMoverInputs DoNothingInput;
 			// If we get here, that means this pawn is not currently possessed and we're choosing to provide default do-nothing input
 			CharacterInputs = DoNothingInput;
+			CharacterInputs.Stance = InputStance;
+			CharacterInputs.bBlockCapsuleResize = AbilitySystem->HasMatchingGameplayTag(GarStateFlagTags::BlockUpdateCapsuleSize);
 		}
 
 		// We don't have a local controller so we can't run the code below. This is ok. Simulated proxies will just use previous input when extrapolating
@@ -375,15 +369,7 @@ void AGarCharacter::ProduceInput_Implementation(int32 SimTimeMs, FMoverInputCmdC
 
 	CharacterInputs.ControlRotation = GetControlRotation();
 
-	if (bDuringStanceChange && MovementInputVector.Size2D() < 0.01f)
-	{
-		CharacterInputs.SetMoveInput(EMoveInputType::DirectionalIntent, MovementInputVector + GetActorForwardVector() * 0.02f);
-	}
-	else
-	{
-		CharacterInputs.SetMoveInput(EMoveInputType::DirectionalIntent, MovementInputVector);
-	}
-	bDuringStanceChange = false;
+	CharacterInputs.SetMoveInput(EMoveInputType::DirectionalIntent, MovementInputVector);
 
 	static float RotationMagMin(1e-3f);
 
@@ -443,13 +429,6 @@ void AGarCharacter::Tick(const float DeltaTime)
 
 	TryAdjustControllRotation(DeltaTime);
 
-	RefreshEyeHeight(DeltaTime);
-	// Ragdoll Mover positions the capsule from the physics pose. Stance resizing must not
-	// queue competing teleports or move the visual root while physics is driving the body.
-	if (!PhysicsControl->IsRagdolling())
-	{
-		RefreshCapsuleSize(DeltaTime);
-	}
 	CheckCanUnCrouchIfNeeded();
 	CheckCanCrouchIfNeeded();
 
@@ -831,185 +810,6 @@ bool AGarCharacter::IsLying() const
 void AGarCharacter::SetInputStance(const FGameplayTag & NewInputStance)
 {
 	InputStance = NewInputStance;
-}
-
-bool AGarCharacter::UpdateMainCapsule(float DeltaTime, float TargetHalfHeight, float HeightSpeed, float TargetRadius, float RadiusSpeed)
-{
-	TargetRadius = FMath::Max(0.f, TargetRadius);
-	TargetHalfHeight = FMath::Max3(0.f, TargetRadius, TargetHalfHeight);
-
-	const float OldHalfHeight = Capsule->GetUnscaledCapsuleHalfHeight();
-	const float OldRadius = Capsule->GetUnscaledCapsuleRadius();
-	const float HalfHeight = FMath::FInterpConstantTo(OldHalfHeight, TargetHalfHeight, DeltaTime, HeightSpeed);
-	const float Radius = FMath::FInterpConstantTo(OldRadius, TargetRadius, DeltaTime, RadiusSpeed);
-	
-	if (OldHalfHeight != HalfHeight || OldRadius != Radius)
-	{
-		double Scale{Capsule->GetComponentTransform().GetScale3D().Z};
-		// Now call SetCapsuleSize() to cause touch/untouch events and actually grow the capsule
-		Capsule->SetCapsuleSize(Radius, HalfHeight, false);
-
-		// Add offset to visual component as the base location has changed
-
-		if (GetLocalRole() <= ROLE_SimulatedProxy)
-		{
-			if (Mesh)
-			{
-				//Mesh->GetRelativeLocation_DirectMutable().Z = InitialMeshZ
-				//	+ (HalfHeight < Radius ? InitialCapsuleRadius - Radius : InitialCapsuleHalfHeight - HalfHeight) * Scale;
-				auto Loc{Mesh->GetRelativeLocation()};
-				Loc.Z = InitialMeshZ
-					+ (HalfHeight < Radius ? InitialCapsuleRadius - Radius : InitialCapsuleHalfHeight - HalfHeight) * Scale;
-				GarCharacterConstants::UpdateMeshOffset(Mesh, Loc);
-			}
-		}
-		else
-		{
-			auto TeleportEffect = MakeShared<FTeleportEffect>();
-			TeleportEffect->TargetLocation = CharacterMover->GetUpdatedComponentTransform().GetLocation()
-				+ CharacterMover->GetUpDirection() * (HalfHeight < Radius ? Radius - OldRadius : HalfHeight - OldHalfHeight) * Scale;
-			CharacterMover->QueueInstantMovementEffect(TeleportEffect);
-
-			if (Mesh)
-			{
-				auto MoverVisualComponentOffset = CharacterMover->GetBaseVisualComponentTransform();
-				auto Location{MoverVisualComponentOffset.GetLocation()};
-				Location.Z = InitialMeshZ + (HalfHeight < Radius ? InitialCapsuleRadius - Radius : InitialCapsuleHalfHeight - HalfHeight) * Scale;
-				MoverVisualComponentOffset.SetLocation(Location);
-				CharacterMover->SetBaseVisualComponentTransform(MoverVisualComponentOffset);
-				GarCharacterConstants::UpdateMeshOffset(Mesh, Location);
-			}
-		}
-		return true;
-	}
-	return false;
-}
-
-bool AGarCharacter::UpdateProneCapsule(float DeltaTime, float TargetHalfHeight, float HeightSpeed, float TargetRadius, float RadiusSpeed,
-	float TargetOffset, float OffsetSpeed)
-{
-	TargetRadius = FMath::Max(0.f, TargetRadius);
-	TargetHalfHeight = FMath::Max3(0.f, TargetRadius, TargetHalfHeight);
-
-	const float OldHalfHeight = ProneCapsule->GetUnscaledCapsuleHalfHeight();
-	const float OldRadius = ProneCapsule->GetUnscaledCapsuleRadius();
-	const float OldOffsetX = ProneCapsule->GetRelativeLocation().X;
-	const float HalfHeight = FMath::FInterpConstantTo(OldHalfHeight, TargetHalfHeight, DeltaTime, HeightSpeed);
-	const float Radius = FMath::FInterpConstantTo(OldRadius, TargetRadius, DeltaTime, RadiusSpeed);
-	const float OffsetX = FMath::FInterpConstantTo(OldOffsetX, TargetOffset, DeltaTime, OffsetSpeed);
-
-	if (OldHalfHeight != HalfHeight || OldRadius != Radius || OldOffsetX != OffsetX)
-	{
-		// Now call SetCapsuleSize() to cause touch/untouch events and actually grow the capsule
-		ProneCapsule->SetCapsuleSize(Radius, HalfHeight, false);
-		ProneCapsule->GetRelativeLocation_DirectMutable().X = OffsetX;
-		return true;
-	}
-	return false;
-}
-
-void AGarCharacter::RefreshCapsuleSize(float DeltaTime)
-{
-	if (AbilitySystem->HasMatchingGameplayTag(GarStateFlagTags::BlockUpdateCapsuleSize))
-	{
-		return;
-	}
-
-	bool bMainUpdated = false;
-	bool bSubUpdated = false;
-	bool bNeedsWeld = false;
-
-	// Update capsule height and radius
-	// async physcis ではカプセルアニメーションがうまくいかないので強制即変更
-	auto CapsuleUpdateSpeed{UPhysicsSettings::Get()->bTickPhysicsAsync ? 0.f : Settings->CapsuleUpdateSpeed};
-
-	auto ProneHalfHeightSpeed{CapsuleUpdateSpeed > 0
-		? FMath::Abs(InitialProneCapsuleHalfHeight - LiedProneCapsuleHalfHeight) / CapsuleUpdateSpeed
-		: UE_MAX_FLT};
-	auto OffsetSpeed{CapsuleUpdateSpeed > 0 ? LiedProneCapsuleZOffset / CapsuleUpdateSpeed : UE_MAX_FLT};
-	if (AbilitySystem->HasMatchingGameplayTag(GarStanceTags::Lying))
-	{
-		auto HalfHeightSpeed{CapsuleUpdateSpeed > 0
-			? FMath::Abs(CrouchedCapsuleHalfHeight - LiedCapsuleHalfHeight) / CapsuleUpdateSpeed
-			: UE_MAX_FLT};
-		bMainUpdated = UpdateMainCapsule(DeltaTime, LiedCapsuleHalfHeight, HalfHeightSpeed, InitialCapsuleRadius, 0.f);
-		bSubUpdated = UpdateProneCapsule(DeltaTime, LiedProneCapsuleHalfHeight, ProneHalfHeightSpeed, InitialProneCapsuleRadius, 0.f,
-			InitialProneCapsuleX + LiedProneCapsuleZOffset, OffsetSpeed);
-		bNeedsWeld = true;
-	}
-	else if (AbilitySystem->HasMatchingGameplayTag(GarStanceTags::Crouching))
-	{
-		auto HalfHeightSpeed{CapsuleUpdateSpeed > 0
-			? FMath::Abs(InitialCapsuleHalfHeight - CrouchedCapsuleHalfHeight) / CapsuleUpdateSpeed
-			: UE_MAX_FLT};
-		bMainUpdated = UpdateMainCapsule(DeltaTime, CrouchedCapsuleHalfHeight, HalfHeightSpeed, InitialCapsuleRadius, 0.f);
-		bSubUpdated = UpdateProneCapsule(DeltaTime, InitialProneCapsuleHalfHeight, ProneHalfHeightSpeed, InitialProneCapsuleRadius, 0.f,
-			InitialProneCapsuleX, OffsetSpeed);
-		bNeedsWeld = bSubUpdated;
-	}
-	else if (AbilitySystem->HasMatchingGameplayTag(GarStanceTags::Standing))
-	{
-		auto HalfHeightSpeed{CapsuleUpdateSpeed > 0
-			? FMath::Abs(InitialCapsuleHalfHeight - CrouchedCapsuleHalfHeight) / CapsuleUpdateSpeed
-			: UE_MAX_FLT};
-		bMainUpdated = UpdateMainCapsule(DeltaTime, InitialCapsuleHalfHeight, HalfHeightSpeed, InitialCapsuleRadius, 0.f);
-		bSubUpdated = UpdateProneCapsule(DeltaTime, InitialProneCapsuleHalfHeight, ProneHalfHeightSpeed, InitialProneCapsuleRadius, 0.f,
-			InitialProneCapsuleX, OffsetSpeed);
-		bNeedsWeld = bSubUpdated;
-	}
-
-	// Signal Mover to re-check collision with updated ProneCapsule
-	bDuringStanceChange = bMainUpdated || bSubUpdated;
-
-	if (bDuringStanceChange)
-	{
-		if (ProneCapsule->IsWelded())
-		{
-			// Notify welded component size update
-			ProneCapsule->UnWeldFromParent();
-		}
-
-		UE_LOG(LogGar, Log, TEXT("DuringStanceChange"));
-	}
-
-	if (bNeedsWeld)
-	{
-		if (!ProneCapsule->IsWelded())
-		{
-			ProneCapsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			ProneCapsule->WeldTo(Capsule, NAME_None, true);
-		}
-	}
-	else
-	{
-		if (ProneCapsule->IsWelded())
-		{
-			ProneCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			ProneCapsule->UnWeldFromParent();
-		}
-	}
-}
-
-void AGarCharacter::RefreshEyeHeight(float DeltaTime)
-{
-	// Update eye height
-
-	auto CapsuleUpdateSpeed{Settings->CapsuleUpdateSpeed};
-	if (AbilitySystem->HasMatchingGameplayTag(GarStanceTags::Lying))
-	{
-		auto EyeHeightSpeed{CapsuleUpdateSpeed > 0 ? FMath::Abs(CrouchedEyeHeight - LiedEyeHeight) / CapsuleUpdateSpeed : .0f};
-		BaseEyeHeight = FMath::FInterpConstantTo(BaseEyeHeight, LiedEyeHeight, DeltaTime, EyeHeightSpeed);
-	}
-	else if (AbilitySystem->HasMatchingGameplayTag(GarStanceTags::Crouching))
-	{
-		auto EyeHeightSpeed{CapsuleUpdateSpeed > 0 ? FMath::Abs(InitialEyeHeight - CrouchedEyeHeight) / CapsuleUpdateSpeed : .0f};
-		BaseEyeHeight = FMath::FInterpConstantTo(BaseEyeHeight, CrouchedEyeHeight, DeltaTime, EyeHeightSpeed);
-	}
-	else if(AbilitySystem->HasMatchingGameplayTag(GarStanceTags::Standing))
-	{
-		auto EyeHeightSpeed{CapsuleUpdateSpeed > 0 ? FMath::Abs(InitialEyeHeight - CrouchedEyeHeight) / CapsuleUpdateSpeed : .0f};
-		BaseEyeHeight = FMath::FInterpConstantTo(BaseEyeHeight, InitialEyeHeight, DeltaTime, EyeHeightSpeed);
-	}
 }
 
 FGameplayTag AGarCharacter::GetDesiredGait() const

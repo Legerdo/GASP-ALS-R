@@ -10,6 +10,10 @@ for path in (
     "/Game/Blueprints/MovementModes/BP_MovementMode_Ragdoll",
     "/GAR/Core/B_Gar_Character",
     "/GAR/Core/Abilities/GA_Gar_Action_Unconsious",
+    "/GAR/Core/Abilities/GA_Gar_Action_GettingUp",
+    "/GAR/Core/AnimationInstances/AB_Gar",
+    "/GAR/Core/AnimationInstances/AB_Gar_Ragdolling",
+    "/GAR/Core/AnimationInstances/Overrides/AB_Gar_Override_Unconsious",
 ):
     asset = unreal.load_asset(path)
     if not asset:

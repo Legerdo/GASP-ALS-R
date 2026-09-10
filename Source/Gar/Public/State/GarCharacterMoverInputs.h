@@ -17,6 +17,7 @@ public:
 	bool operator==(const FGarCharacterMoverInputs& Other) const
 	{
 		return Super::operator==(Other) && RotationMode == Other.RotationMode && Stance == Other.Stance && Gait == Other.Gait
+			&& bBlockCapsuleResize == Other.bBlockCapsuleResize
 			&& bHasRagdollTransform == Other.bHasRagdollTransform
 			&& (!bHasRagdollTransform || RagdollTransform.Equals(Other.RagdollTransform));
 	}
@@ -35,6 +36,7 @@ public:
 		Ar << RotationMode;
 		Ar << Stance;
 		Ar << Gait;
+		Ar.SerializeBits(&bBlockCapsuleResize, 1);
 		Ar.SerializeBits(&bHasRagdollTransform, 1);
 		if (bHasRagdollTransform)
 		{
@@ -70,6 +72,7 @@ public:
 		if(ClosestInputs->RotationMode.IsValid()) RotationMode = ClosestInputs->RotationMode;
 		if(ClosestInputs->Stance.IsValid()) Stance = ClosestInputs->Stance;
 		if(ClosestInputs->Gait.IsValid()) Gait = ClosestInputs->Gait;
+		bBlockCapsuleResize = ClosestInputs->bBlockCapsuleResize;
 		bHasRagdollTransform = ClosestInputs->bHasRagdollTransform;
 		RagdollTransform = ClosestInputs->RagdollTransform;
 	}
@@ -80,6 +83,7 @@ public:
 		if(TypedFrom.RotationMode.IsValid()) RotationMode = TypedFrom.RotationMode;
 		if(TypedFrom.Stance.IsValid()) Stance = TypedFrom.Stance;
 		if(TypedFrom.Gait.IsValid()) Gait = TypedFrom.Gait;
+		bBlockCapsuleResize = TypedFrom.bBlockCapsuleResize;
 		bHasRagdollTransform = TypedFrom.bHasRagdollTransform;
 		RagdollTransform = TypedFrom.RagdollTransform;
 	}
@@ -93,6 +97,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mover)
 	FGameplayTag Gait;
+
+	/** Capture the GAS resize lock outside simulation so replay uses the original decision. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mover)
+	bool bBlockCapsuleResize{false};
 
 	/** Sample-style physics pose captured OUTSIDE simulation, retained for network replay. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mover)

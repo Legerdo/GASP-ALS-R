@@ -13,6 +13,8 @@ class UMotionWarpingMoverAdapter;
 class UCommonLegacyMovementSettings;
 class UGarMovementSettings;
 class AGarCharacter;
+struct FGarMoverStanceState;
+struct FGarCharacterMoverInputs;
 
 UCLASS(ClassGroup = "GAR", BlueprintType, Blueprintable, Meta = (BlueprintSpawnableComponent))
 class GAR_API UGarCharacterMoverComponent : public UMoverComponent
@@ -69,13 +71,20 @@ public:
 	virtual void InitializeComponent() override;
 
 	virtual void BeginPlay() override;
+	virtual void GetDefaultInputAndState(FMoverInputCmdContext& OutInputCmd, FMoverSyncState& OutSyncState,
+		FMoverAuxStateContext& OutAuxState) const override;
+	virtual void OnPreSimulate(const FMoverTimeStep& TimeStep, const FMoverTickStartData& StartingData) override;
+
+	/** Apply geometry/visual state without touching simulation caches. Returns whether collision geometry
+	 *  or the pivot changed. Only an instant effect supplies a nonzero pivot adjustment. */
+	bool ApplyStanceState(const FGarMoverStanceState& State, float CapsuleHeightDelta = 0.0f);
 
 protected:
 	UFUNCTION()
 	virtual void OnMoverPreSimulationTick(const FMoverTimeStep& TimeStep, const FMoverInputCmdContext& InputCmd);
 
 	UFUNCTION()
-	virtual void UpdateStatusesOfSimulatedProxy(const FMoverSyncState& SyncState, const FMoverAuxStateContext& AuxState);
+	virtual void OnMoverPostFinalize(const FMoverSyncState& SyncState, const FMoverAuxStateContext& AuxState);
 
 public:
 	UFUNCTION(BlueprintPure, Category = "GAR|CharacterMover")
@@ -102,6 +111,11 @@ public:
 	const bool GetFacingUpward() const { return bFacingUpward; }
 
 private:
+	FGarMoverStanceState CaptureStanceState() const;
+	void QueueStanceUpdate(const FMoverTimeStep& TimeStep, const FMoverTickStartData& StartingData);
+	FGarMoverStanceState AdvanceStance(const FGarMoverStanceState& Current, const FGarCharacterMoverInputs& Inputs,
+		float DeltaTime) const;
+
 #if GAR_USE_MOVEMENTMODIFIER
 	FMovementModifierHandle RotationModifierHandle;
 	FMovementModifierHandle StanceModifierHandle;

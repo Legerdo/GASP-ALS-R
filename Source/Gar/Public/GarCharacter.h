@@ -370,25 +370,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GAR|Character")
 	void SetInputStance(const FGameplayTag &NewInputStance);
 
-protected:
-	bool UpdateMainCapsule(float DeltaTime, float TargetHalfHeight, float HeightSpeed, float TargetRadius, float RadiusSpeed);
-
-	bool UpdateProneCapsule(float DeltaTime, float TargetHalfHeight, float HeightSpeed, float TargetRadius, float RadiusSpeed,
-		float TargetOffset, float OffsetSpeed);
-
-	void RefreshCapsuleSize(float DeltaTime);
-
-	void RefreshEyeHeight(float DeltaTime);
-
 private:
 	FVector MovementInputVector = FVector::ZeroVector;
 
 	bool bUnCrouchBlocked = false;
 	bool bCrouchBlocked = false;
 	bool bLieBlocked = false;
-
-	// Signal to force SimulationTick to run even with zero move delta during stance changes
-	bool bDuringStanceChange = false;
 
 	// Desired Gait
 

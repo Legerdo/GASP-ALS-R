@@ -98,11 +98,6 @@ void UGarPhysicsControlComponent::TickComponent(float DeltaTime, ELevelTick Tick
 			StopRagdoll();
 		}
 
-		if (GFrameCounter > RestoreProfileAfterFrame)
-		{
-			CurrentControlProfileName = NAME_None;
-			RestoreProfileAfterFrame = MAX_uint64;
-		}
 		if (!bRagdolling)
 		{
 			UpdatePhysicalAnimation();
@@ -187,8 +182,6 @@ bool UGarPhysicsControlComponent::StartRagdoll(const FGameplayTag& RagdollTag)
 	{
 		return false;
 	}
-	RestoreProfileAfterFrame = MAX_uint64;
-
 	CurrentRagdollTag = RagdollTag;
 	bRagdolling = true;
 	RagdollStatus = {};
@@ -266,19 +259,11 @@ void UGarPhysicsControlComponent::StopRagdoll()
 	CurrentControlProfileName = NAME_None;
 	RagdollStatus = {};
 	UpdatePhysicalAnimation();
-	// Switching the ABP to the saved pose produces a discontinuity in target velocity. Suppress
-	// feed-forward for one PCC update; the next update restores the authored profile values.
-	for (const FName Name : GetControlNamesInSet(GarPhysicsControl::AllSetName))
-	{
-		FPhysicsControlData Data;
-		if (GetControlData(Name, Data))
-		{
-			Data.LinearTargetVelocityMultiplier = 0.0f;
-			Data.AngularTargetVelocityMultiplier = 0.0f;
-			SetControlData(Name, Data);
-		}
-	}
-	RestoreProfileAfterFrame = GFrameCounter;
+	// Forget the old animation targets so the next PCC update cannot interpret the snapshot
+	// switch as a velocity impulse. A render-frame delay can expire BEFORE that update when
+	// the ability ends after PCC has already ticked. This does not teleport the physical bodies
+	// or override the velocity multipliers authored in the PCA.
+	SetCachedBoneVelocitiesToZero();
 	Character->GetMover()->QueueNextMode(Character->GetMover()->StartingMovementMode);
 }
 

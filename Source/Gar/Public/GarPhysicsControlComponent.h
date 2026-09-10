@@ -212,5 +212,4 @@ private:
 	FCollisionResponseContainer PreviousProneCapsuleResponses;
 	TArray<FName> LeftLegBones;
 	TArray<FName> RightLegBones;
-	uint64 RestoreProfileAfterFrame{MAX_uint64};
 };
