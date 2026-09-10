@@ -47,6 +47,22 @@ Defined in `GarCameraGameplayTags.h`:
 3. Call `SetDesiredPerspective()` / `SetDesiredShoulderMode()` to request camera changes.  
    Changes are replicated and validated against `PerspectiveChangeBlockTime`.
 
+### UE 5.8 camera ownership
+
+With `AGameplayCamerasPlayerCameraManager`, GAR disables the component's standalone
+camera system during runtime initialization, before `BeginPlay`. Possession calls
+the manager's `ActivateGameplayCamera`; unpossession and camera-state `EndPlay`
+remove the context and its rigs before stopping the component. Repeated possession
+notifications do not restart an already-active context.
+
+Camera state reads the evaluator hosting the component's evaluation context, so
+camera variables and FOV come from the manager in this mode. A regular
+`APlayerCameraManager` retains the standalone fallback.
+
+No engine patch or manually added `CineCameraComponent` is required. Blueprint
+defaults remain unchanged for editor previews. GAR does not force `ViewTarget`
+each tick or override the HUD's manual debug-target selection.
+
 ## Related
 
 - [Character](Character.md)

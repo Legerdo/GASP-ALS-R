@@ -5,6 +5,7 @@
 #include "GameFramework/GameplayCameraComponentBase.h"
 #include "GameFramework/GameplayCamerasPlayerCameraManager.h"
 #include "AbilitySystemComponent.h"
+#include "Core/CameraEvaluationContext.h"
 #include "Core/CameraSystemEvaluator.h"
 #include "Core/CameraVariableAssets.h"
 #include "Core/RootCameraNode.h"
@@ -31,6 +32,7 @@ UGarGameplayCameraStateComponent::UGarGameplayCameraStateComponent(const FObject
 
 	bAutoActivate = true;
 	bTickInEditor = false;
+	bWantsInitializeComponent = true;
 
 	SetIsReplicatedByDefault(true);
 	SetCanEverAffectNavigation(false);
@@ -80,6 +82,23 @@ void UGarGameplayCameraStateComponent::GetLifetimeReplicatedProps(TArray<FLifeti
 	DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, DesiredShoulderMode, Parameters)
 }
 
+void UGarGameplayCameraStateComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	if (Character.IsValid())
+	{
+		GameplayCameraComponent = Character->GetComponentByClass<UGameplayCameraComponentBase>();
+		if (GameplayCameraComponent.IsValid())
+		{
+			// Runtime initialization precedes every component's BeginPlay. Do not start a
+			// standalone evaluator before the possessing camera manager can claim this context.
+			// Leave the Blueprint defaults alone so the editor's camera preview still works.
+			GameplayCameraComponent->bRunStandaloneCameraSystem = false;
+		}
+	}
+}
+
 void UGarGameplayCameraStateComponent::Activate(const bool bReset)
 {
 	Super::Activate(bReset);
@@ -108,8 +127,31 @@ void UGarGameplayCameraStateComponent::Deactivate()
 void UGarGameplayCameraStateComponent::OnPossessed_Implementation(AController* NewController)
 {
 	auto* NewPlayerController{Cast<APlayerController>(NewController)};
-	if (IsValid(NewPlayerController) && GameplayCameraComponent.IsValid())
+	if (!IsValid(NewPlayerController) || !NewPlayerController->IsLocalController() || !GameplayCameraComponent.IsValid())
 	{
+		return;
+	}
+
+	auto* CameraManager{Cast<AGameplayCamerasPlayerCameraManager>(NewPlayerController->PlayerCameraManager)};
+	const auto Context = GameplayCameraComponent->GetEvaluationContext();
+	if (IsValid(CameraManager) && ActiveCameraManager == CameraManager && Context && Context->IsActive())
+	{
+		// ActivateGameplayCamera rejects an already-active context. Possession notifications
+		// must be idempotent, including while another camera is temporarily on top of ours.
+		return;
+	}
+
+	StopGameplayCamera();
+	if (IsValid(CameraManager))
+	{
+		GameplayCameraComponent->bRunStandaloneCameraSystem = false;
+		CameraManager->ActivateGameplayCamera(GameplayCameraComponent.Get());
+		ActiveCameraManager = CameraManager;
+	}
+	else
+	{
+		// Preserve support for projects using a regular PlayerCameraManager.
+		GameplayCameraComponent->bRunStandaloneCameraSystem = true;
 		GameplayCameraComponent->ActivateCameraForPlayerController(NewPlayerController);
 	}
 }
@@ -119,11 +161,32 @@ void UGarGameplayCameraStateComponent::OnUnPossessed_Implementation(AController*
 	if (GameplayCameraComponent.IsValid())
 	{
 		auto Context = GameplayCameraComponent->GetEvaluationContext();
-		if (Context && (PreviousController == nullptr || Context->GetPlayerController() == PreviousController))
+		if (!Context || PreviousController == nullptr || Context->GetPlayerController() == PreviousController)
 		{
-			GameplayCameraComponent->DeactivateCamera();
+			StopGameplayCamera();
 		}
 	}
+}
+
+void UGarGameplayCameraStateComponent::StopGameplayCamera()
+{
+	if (GameplayCameraComponent.IsValid())
+	{
+		if (ActiveCameraManager.IsValid())
+		{
+			// Stop rigs before destroying their context; removing it from the stack alone
+			// can leave a blending-out rig referring to an unpossessed character.
+			ActiveCameraManager->DeactivateGameplayCamera(GameplayCameraComponent.Get(), true);
+		}
+		GameplayCameraComponent->DeactivateCamera();
+	}
+	ActiveCameraManager.Reset();
+}
+
+void UGarGameplayCameraStateComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	StopGameplayCamera();
+	Super::EndPlay(EndPlayReason);
 }
 
 void UGarGameplayCameraStateComponent::InitializeByCameraVariables(
@@ -237,7 +300,9 @@ void UGarGameplayCameraStateComponent::TickComponent(float DeltaTime, enum ELeve
 
 	FirstPersonFactor = 0.0f;
 
-	auto CameraSystemEvaluator = GameplayCameraComponent->GetCameraSystemEvaluator();
+	auto CameraSystemEvaluator = ActiveCameraManager.IsValid()
+		? ActiveCameraManager->GetCameraSystemEvaluator()
+		: GameplayCameraComponent->GetCameraSystemEvaluator();
 	if (CameraSystemEvaluator.IsValid())
 	{
 		const auto& Result = CameraSystemEvaluator->GetEvaluatedResult();
