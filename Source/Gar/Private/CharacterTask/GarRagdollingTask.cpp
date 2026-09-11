@@ -8,7 +8,8 @@
 #include "GarCharacter.h"
 #include "GarCharacterMoverComponent.h"
 #include "GarAbilitySystemComponent.h"
-#include "GarPhysicalAnimationComponent.h"
+#include "GarPhysicsControlComponent.h"
+#include "Components/GarOverrideModeComponent.h"
 #include "LinkedAnimLayers/GarRagdollingOverrideAnimInstance.h"
 #include "LinkedAnimLayers/GarRagdollingAnimInstance.h"
 #include "GarGameplayTags.h"
@@ -20,7 +21,17 @@
 
 void UGarRagdollingTask::Begin()
 {
+	if (IsActive() || !Component.IsValid() || !CanStart(Character.Get(), Component->GetCurrentOverrideTag())) return;
+	bOnGroundedAndAgedFired = false;
 	Super::Begin();
+	if (!Character->GetPhysicsControl()->StartRagdoll(Component->GetCurrentOverrideTag()))
+	{
+		Super::End();
+		return;
+	}
+	bOwnsPhysicsRagdoll = true;
+	// Physics ownership must not depend on evaluating a linked animation layer.
+	Character->GetPhysicsControl()->SetRagdollingTaskActive(true);
 
 	if(OverrideAnimInstance.IsValid())
 	{
@@ -29,17 +40,27 @@ void UGarRagdollingTask::Begin()
 		{
 			RagdollingOverrideAnimInstance->Reset();
 			RagdollingOverrideAnimInstance->SetRagdollingTaskActive(true);
-
-			auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-			auto& RagdollingState{PhysicalAnimation->GetRagdollingState()};
-			RagdollingState.RagdollingAnimInstance->SetRagdollingTaskActive(true);
 		}
 	}
 }
 
 void UGarRagdollingTask::End()
 {
+	StopPhysicsRagdoll();
 	Super::End();
+}
+
+void UGarRagdollingTask::Cancel()
+{
+	StopPhysicsRagdoll();
+	Super::Cancel();
+}
+
+void UGarRagdollingTask::StopPhysicsRagdoll()
+{
+	if (!bOwnsPhysicsRagdoll) return;
+	bOwnsPhysicsRagdoll = false;
+	if (Character.IsValid()) Character->GetPhysicsControl()->StopRagdoll();
 
 	if (OverrideAnimInstance.IsValid())
 	{
@@ -51,33 +72,44 @@ void UGarRagdollingTask::End()
 	}
 }
 
+bool UGarRagdollingTask::CanStart(const AGarCharacter* Character, const FGameplayTag& RagdollTag)
+{
+	return IsValid(Character) && Character->GetPhysicsControl()
+		&& Character->GetPhysicsControl()->HasRagdollSettings(RagdollTag);
+}
+
+FVector UGarRagdollingTask::GetRagdollVelocity() const
+{
+	FVector Velocity = FVector::ZeroVector;
+	if (Character.IsValid() && bOwnsPhysicsRagdoll) Character->GetPhysicsControl()->GetTopBodyVelocity(Velocity);
+	return Velocity;
+}
+
 void UGarRagdollingTask::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-	auto& RagdollingState{PhysicalAnimation->GetRagdollingState()};
-
-	if (!IsActive() || RagdollingState.bFreezing)
+	auto* PhysicsControl{Character->GetPhysicsControl()};
+	if (!IsActive() || PhysicsControl->IsRagdollFrozen())
 	{
 		return;
 	}
 
-	if (RagdollingState.IsGroundedAndAged())
+	if (PhysicsControl->IsRagdollingAndGroundedAndAged())
 	{
 		if (!bOnGroundedAndAgedFired)
 		{
 			bOnGroundedAndAgedFired = true;
 			K2_OnGroundedAndAged();
 		}
-		Character->SetInputStance(RagdollingState.bFacingUpward ? GarStanceTags::LyingBack : GarStanceTags::LyingFront);
+		Character->SetInputStance(PhysicsControl->IsRagdollingFacingUpward() ? GarStanceTags::LyingBack : GarStanceTags::LyingFront);
 
 		// local only. not be replicated.
-		Character->GetGarAbilitySystem()->SetLooseGameplayTagCount(GarStateFlagTags::FacingUpward, RagdollingState.bFacingUpward ? 1 : 0);
+		Character->GetGarAbilitySystem()->SetLooseGameplayTagCount(GarStateFlagTags::FacingUpward, PhysicsControl->IsRagdollingFacingUpward() ? 1 : 0);
 	}
 	else
 	{
-		if (RagdollingState.bGrounded)
+		if (PhysicsControl->GetRagdollStatus().bGrounded)
 		{
 			Character->SetInputStance(GarStanceTags::Crouching);
 		}
@@ -112,14 +144,10 @@ void UGarRagdollingTask::OnFinished()
 {
 	Super::OnFinished();
 
-	auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-	auto& RagdollingState{PhysicalAnimation->GetRagdollingState()};
-	RagdollingState.RagdollingAnimInstance->SetRagdollingTaskActive(false);
+	if (Character.IsValid()) Character->GetPhysicsControl()->SetRagdollingTaskActive(false);
 }
 
 bool UGarRagdollingTask::IsGroundedAndAged() const
 {
-	auto* PhysicalAnimation{Character->GetPhysicalAnimation()};
-	auto& RagdollingState{PhysicalAnimation->GetRagdollingState()};
-	return RagdollingState.IsGroundedAndAged();
+	return bOwnsPhysicsRagdoll && Character.IsValid() && Character->GetPhysicsControl()->IsRagdollingAndGroundedAndAged();
 }

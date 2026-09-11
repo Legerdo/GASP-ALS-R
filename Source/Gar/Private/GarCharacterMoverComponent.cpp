@@ -25,10 +25,10 @@
 #include "MoverModifiers/GarMoverStanceModifier.h"
 #include "MoverModifiers/GarMoverGaitModifier.h"
 #endif
-#include "GarPhysicalAnimationComponent.h"
 #include "Settings/GarMovementSettings.h"
 #include "State/GarCharacterMoverInputs.h"
 #include "State/GarCharacterMoverSyncState.h"
+#include "State/GarMoverStanceState.h"
 #include "Utility/GarUtility.h"
 #include "Utility/GarLog.h"
 
@@ -121,13 +121,16 @@ void UGarCharacterMoverComponent::BeginPlay()
 		return;
 	}
 
+	// Register at runtime as well, since Blueprint defaults can override the persistent-type array.
+	if (!PersistentSyncStateDataTypes.ContainsByPredicate([](const FMoverDataPersistence& Entry)
+		{ return Entry.RequiredType == FGarMoverStanceState::StaticStruct(); }))
+	{
+		PersistentSyncStateDataTypes.Add(FMoverDataPersistence(FGarMoverStanceState::StaticStruct(), true));
+	}
 	Super::BeginPlay();
 
 	OnPreSimulationTick.AddUniqueDynamic(this, &UGarCharacterMoverComponent::OnMoverPreSimulationTick);
-	if (GetOwnerRole() == ROLE_SimulatedProxy)
-	{
-		OnPostFinalize.AddUniqueDynamic(this, &UGarCharacterMoverComponent::UpdateStatusesOfSimulatedProxy);
-	}
+	OnPostFinalize.AddUniqueDynamic(this, &UGarCharacterMoverComponent::OnMoverPostFinalize);
 }
 
 void UGarCharacterMoverComponent::OnMoverPreSimulationTick(const FMoverTimeStep& TimeStep, const FMoverInputCmdContext& InputCmd)
@@ -217,7 +220,7 @@ void UGarCharacterMoverComponent::OnMoverPreSimulationTick(const FMoverTimeStep&
 			MARK_PROPERTY_DIRTY_FROM_NAME(ThisClass, Gait, this)
 		}
 #endif
-		if (CharacterInputs->bIsJumpJustPressed && IsValid(Settings))
+		if (!CharacterInputs->bHasRagdollTransform && CharacterInputs->bIsJumpJustPressed && IsValid(Settings))
 		{
 			auto JumpMove = MakeShared<FJumpImpulseEffect>();
 			JumpMove->UpwardsSpeed = CommonSettings->JumpUpwardsSpeed;
@@ -226,8 +229,14 @@ void UGarCharacterMoverComponent::OnMoverPreSimulationTick(const FMoverTimeStep&
 	}
 }
 
-void UGarCharacterMoverComponent::UpdateStatusesOfSimulatedProxy(const FMoverSyncState& SyncState, const FMoverAuxStateContext& AuxState)
+void UGarCharacterMoverComponent::OnMoverPostFinalize(const FMoverSyncState& SyncState, const FMoverAuxStateContext& AuxState)
 {
+	if (const auto* StanceState = SyncState.SyncStateCollection.FindDataByType<FGarMoverStanceState>())
+	{
+		// Interpolated proxies consume the synchronized geometry instead of running their own stance timer.
+		ApplyStanceState(*StanceState);
+	}
+	if (GetOwnerRole() != ROLE_SimulatedProxy) return;
 	auto MySyncState = SyncState.SyncStateCollection.FindMutableDataByType<FGarCharacterMoverSyncState>();
 	if (MySyncState)
 	{

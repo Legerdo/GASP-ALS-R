@@ -144,7 +144,7 @@ public:
 	static const FName& TraversalDebugDisplayName();
 
 	UFUNCTION(BlueprintPure, Category = "GAR|Constants|Debug", Meta = (ReturnDisplayName = "Display Name"))
-	static const FName& PADebugDisplayName();
+	static const FName& PhysicsControlDebugDisplayName();
 };
 
 inline const FName& UGarConstants::LayerHeadCurveName()
@@ -393,8 +393,8 @@ inline const FName& UGarConstants::TraversalDebugDisplayName()
 	return Name;
 }
 
-inline const FName& UGarConstants::PADebugDisplayName()
+inline const FName& UGarConstants::PhysicsControlDebugDisplayName()
 {
-	static const FName Name{TEXTVIEW("GAR.PhysicalAnimation")};
+	static const FName Name{TEXTVIEW("GAR.PhysicsControl")};
 	return Name;
 }

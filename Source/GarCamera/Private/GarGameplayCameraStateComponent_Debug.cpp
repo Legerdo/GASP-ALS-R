@@ -34,7 +34,7 @@ void UGarGameplayCameraStateComponent::DisplayDebug(UCanvas* Canvas, const FDebu
 			!DisplayInfo.IsDisplayOn(UGarConstants::ShapesDebugDisplayName()) &&
 			!DisplayInfo.IsDisplayOn(UGarConstants::TracesDebugDisplayName()) &&
 			!DisplayInfo.IsDisplayOn(UGarConstants::TraversalDebugDisplayName()) &&
-			!DisplayInfo.IsDisplayOn(UGarConstants::PADebugDisplayName()))
+			!DisplayInfo.IsDisplayOn(UGarConstants::PhysicsControlDebugDisplayName()))
 		{
 			return;
 		}

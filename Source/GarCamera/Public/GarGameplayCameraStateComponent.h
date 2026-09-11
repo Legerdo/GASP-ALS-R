@@ -8,6 +8,7 @@
 class UGarGameplayCameraStateSettings;
 class AGarCharacter;
 class UGameplayCameraComponentBase;
+class AGameplayCamerasPlayerCameraManager;
 class UFloatCameraVariable;
 class UVector3dCameraVariable;
 class URotator3dCameraVariable;
@@ -109,7 +110,11 @@ protected:
 
 	virtual void OnRegister() override;
 
+	virtual void InitializeComponent() override;
+
 	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -211,6 +216,11 @@ protected:
 	void ServerSetDesiredShoulderMode(const FGameplayTag& NewDesiredShoulderMode);
 
 private:
+	// Keep the manager that owns our context, even after the pawn loses its controller.
+	TWeakObjectPtr<AGameplayCamerasPlayerCameraManager> ActiveCameraManager;
+
+	void StopGameplayCamera();
+
 	bool UpdatePerspectiveAndShoulderMode();
 
 	void UpdateFocalLength();

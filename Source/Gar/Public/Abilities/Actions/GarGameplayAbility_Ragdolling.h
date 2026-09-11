@@ -6,6 +6,7 @@
 #include "GarGameplayAbility_Ragdolling.generated.h"
 
 class UGarOverrideTask;
+class UGarRagdollingTask;
 
 /**
  * Ragdolling
@@ -16,6 +17,10 @@ class GAR_API UGarGameplayAbility_Ragdolling : public UGarGameplayAbility_Action
 	GENERATED_UCLASS_BODY()
 
 public:
+	/** Actual physics velocity; Mover's capsule-follow velocity is not a settling test. */
+	UFUNCTION(BlueprintPure, Category = "GAR|Ability|Ragdolling")
+	FVector GetRagdollVelocity() const;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAR", Transient, Meta = (DisplayThumbnail = false))
 	TSubclassOf<UGarOverrideTask> OverrideTaskClass;
 
@@ -52,4 +57,5 @@ protected:
 	void K2_OnGroundedAndAged();
 
 	TWeakObjectPtr<class UGarAbilityTask_Tick> TickTask;
+	TWeakObjectPtr<UGarRagdollingTask> RagdollingTask;
 };

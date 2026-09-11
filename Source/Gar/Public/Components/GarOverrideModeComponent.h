@@ -5,6 +5,7 @@
 #include "GarOverrideModeComponent.generated.h"
 
 class UGarOverrideTask;
+class UGarRagdollingTask;
 class UGarAbilitySystemComponent;
 
 UCLASS(AutoExpandCategories = ("GarOverrideModeComponent|Settings"), Meta = (BlueprintSpawnableComponent))
@@ -26,6 +27,10 @@ protected:
 	TMap<FGameplayTag, TObjectPtr<UGarOverrideTask>> InstancedOverrideTasks;
 
 public:
+	/** Start immediately on the ability's instance; replicated tags use the same task path. */
+	UGarRagdollingTask* StartRagdollingTask(const FGameplayTag& RagdollTag);
+	const FGameplayTag& GetCurrentOverrideTag() const { return CurrentOverrideTag; }
+
 	UFUNCTION(BlueprintCallable)
 	void EndCurrentRagdollingTask();
 

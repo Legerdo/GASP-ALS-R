@@ -1,241 +1,90 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright (c) SAM-tak. All Rights Reserved.
 
 #include "MoverModes/GarMoverRagdollingMode.h"
 
-#include "Components/SkeletalMeshComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Engine/World.h"
 #include "MoverComponent.h"
 #include "MoveLibrary/MovementUtils.h"
-#include "MoveLibrary/BasedMovementUtils.h"
-#include "MoveLibrary/FloorQueryUtils.h"
-#include "MoveLibrary/GroundMovementUtils.h"
-#include "MoveLibrary/AirMovementUtils.h"
-#include "Settings/GarMovementSettings.h"
 #include "State/GarCharacterMoverInputs.h"
-#include "GarPhysicalAnimationComponent.h"
-#include "GarCharacterMoverComponent.h"
-#include "GarCharacter.h"
-#include "GarConstants.h"
-#include "Utility/GarUtility.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GarMoverRagdollingMode)
 
 UGarMoverRagdollingMode::UGarMoverRagdollingMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	SharedSettingsClasses.Add(UGarMovementSettings::StaticClass());
-
 	GameplayTags.AddTag(GarLocomotionModeTags::Grounded);
-}
-
-void UGarMoverRagdollingMode::GenerateMove_Implementation(const FMoverSimContext& SimContext, const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep, FProposedMove& OutProposedMove) const
-{
-	const UMoverComponent* MoverComp = GetMoverComponent();
-	const FMoverDefaultSyncState* StartingSyncState = StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
-	check(StartingSyncState);
-
-	const AGarCharacter* Character{Cast<AGarCharacter>(MoverComp->GetOwner())};
-	// GetBoneTransform は ComponentSpaceTransforms に依存するが、DedicatedServer では
-	// VisibilityBasedAnimTickOption により物理シミュレーション結果が骨トランスフォームに
-	// コピーされないことがある。GetBodyInstance の物理ボディを直接参照することで
-	// サーバーでも正確なラグドール骨位置を取得する。
-	FTransform TargetTransform(StartingSyncState->GetOrientation_WorldSpace(), StartingSyncState->GetLocation_WorldSpace());
-	if (FBodyInstance* TopBoneBodyForTransform = Character->GetMesh()->GetBodyInstance(TopBoneName))
-	{
-		TargetTransform = TopBoneBodyForTransform->GetUnrealWorldTransform();
-	}
-	auto TargetLocation{TargetTransform.GetLocation()};
-
-#if ENABLE_DRAW_DEBUG
-	if (UGarUtility::ShouldDisplayDebugForActor(Character, UGarConstants::PADebugDisplayName()))
-	{
-		DrawDebugCoordinateSystem(Character->GetWorld(), TargetLocation, TargetTransform.Rotator(), 150.0f);
-	}
-#endif
-
-	if (Character->GetPhysicalAnimation()->GetRagdollingState().bFreezing)
-	{
-		return;
-	}
-
-	const float DeltaSeconds = TimeStep.StepMs * 0.001f;
-
-	const FVector CurrentLocation = Character->GetActorLocation();
-
-	auto TopBoneBody{Character->GetMesh()->GetBodyInstance(TopBoneName)};
-
-	float TopBoneSpeed2D = 0;
-	float TopBoneSpeed3D = 0;
-	
-	if (TopBoneBody)
-	{
-		const FVector TopBoneVelocity = TopBoneBody->GetUnrealWorldVelocity();
-		TopBoneSpeed2D = TopBoneVelocity.Size2D();
-		TopBoneSpeed3D = TopBoneVelocity.Size();
-	}
-
-	FVector Velocity{ForceInit};
-	auto Diff{TargetLocation - CurrentLocation};
-	if (GameplayTags.HasTag(GarLocomotionModeTags::Grounded))
-	{
-		auto Len = Diff.Size2D();
-		if (DeltaSeconds > 0 && Len > 0.1f)
-		{
-			auto Dir{Diff.GetSafeNormal2D()};
-			Velocity = (Dir * (Len / DeltaSeconds)).GetClampedToMaxSize(FMath::Clamp(TopBoneSpeed2D, MinSpeed, MaxSpeed));
-		}
-	}
-	else
-	{
-		auto Len = Diff.Size();
-		if (DeltaSeconds > 0 && Len > 0.1f)
-		{
-			Velocity = ((TargetLocation - CurrentLocation) / DeltaSeconds).GetClampedToMaxSize(FMath::Clamp(TopBoneSpeed3D, MinSpeed, MaxSpeed));
-		}
-	}
-
-	auto TargetDirection{TargetTransform.GetRotation().RotateVector(FVector::RightVector)};
-	if (TopBoneBody)
-	{
-		auto TopBoneDirection{TargetTransform.GetRotation().RotateVector(FVector::ForwardVector)};
-		if (TopBoneDirection.Z < 0.7f && TopBoneDirection.Z > -0.7f)
-		{
-			if (Character->GetPhysicalAnimation()->GetRagdollingState().bFacingUpward)
-			{
-				TargetDirection = -TopBoneDirection;
-			}
-			else
-			{
-				TargetDirection = TopBoneDirection;
-			}
-		}
-	}
-	const FRotator CurrentRotation = Character->GetActorRotation();
-	const FRotator RDiff{(TargetDirection.GetSafeNormal2D().Rotation() - CurrentRotation).GetNormalized()};
-	FVector AngularVelocityDegrees{ForceInit};
-	if (DeltaSeconds > 0 && !RDiff.IsNearlyZero(1.0))
-	{
-		AngularVelocityDegrees.Y = FMath::Clamp((RDiff * (1.0f / DeltaSeconds)).Yaw, -360.0f * 2.0f, 360.0f * 2.0f);
-	}
-
-	OutProposedMove.LinearVelocity = Velocity;
-	OutProposedMove.AngularVelocityDegrees = AngularVelocityDegrees;
 }
 
 void UGarMoverRagdollingMode::SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 {
-	UGarCharacterMoverComponent* MoverComp = Cast<UGarCharacterMoverComponent>(GetMoverComponent());
-	const FMoverTickStartData& StartState = Params.StartState;
 	USceneComponent* UpdatedComponent = Params.MovingComps.UpdatedComponent.Get();
-	FProposedMove ProposedMove = Params.ProposedMove;
-
-	if (!UpdatedComponent)
+	const FMoverDefaultSyncState* Start = Params.StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
+	const FGarCharacterMoverInputs* Inputs = Params.StartState.InputCmd.InputCollection.FindDataByType<FGarCharacterMoverInputs>();
+	if (!UpdatedComponent || !Start)
 	{
 		return;
 	}
 
-	const FMoverDefaultSyncState* StartingSyncState = StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
-	check(StartingSyncState);
-
-	FMoverDefaultSyncState& OutputSyncState = OutputState.SyncState.SyncStateCollection.FindOrAddMutableDataByType<FMoverDefaultSyncState>();
-
+	FMoverDefaultSyncState& Output = OutputState.SyncState.SyncStateCollection.FindOrAddMutableDataByType<FMoverDefaultSyncState>();
+	Output = *Start;
+	OutputState.MovementEndState.RemainingMs = 0.0f;
 	const float DeltaSeconds = Params.TimeStep.StepMs * 0.001f;
-
-	FMovementRecord MoveRecord;
-	MoveRecord.SetDeltaSeconds(DeltaSeconds);
-
-	if (GameplayTags.HasTag(GarLocomotionModeTags::InAir))
+	if (!Inputs || !Inputs->bHasRagdollTransform || DeltaSeconds <= UE_SMALL_NUMBER)
 	{
-		UMoverBlackboard* SimBlackboard = MoverComp->GetSimBlackboard_Mutable();
-
-		SimBlackboard->Invalidate(CommonBlackboard::LastFloorResult);	// flying = no valid floor
-		SimBlackboard->Invalidate(CommonBlackboard::LastFoundDynamicMovementBase);
+		// A queued transition may precede the first recorded pose. Never chase world origin.
+		Output.SetTransforms_WorldSpace(Start->GetLocation_WorldSpace(), Start->GetOrientation_WorldSpace(),
+			FVector::ZeroVector, FVector::ZeroVector, nullptr);
+		return;
 	}
 
-	OutputSyncState.MoveDirectionIntent = (ProposedMove.bHasDirIntent ? ProposedMove.DirectionIntent : FVector::ZeroVector);
+	UMoverComponent* Mover = GetMoverComponent();
+	const FVector Up = Mover->GetUpDirection();
+	FVector TargetLocation = Inputs->RagdollTransform.GetLocation();
+	const UCapsuleComponent* Capsule = Cast<UCapsuleComponent>(UpdatedComponent);
+	const float Radius = Capsule ? Capsule->GetScaledCapsuleRadius() : 30.0f;
+	const float HalfHeight = Capsule ? Capsule->GetScaledCapsuleHalfHeight() : 86.0f;
+	constexpr float FloorGap = 1.9f;
 
-
-	// Use the orientation intent directly. If no intent is provided, use last frame's orientation. Note that we are assuming rotation changes can't fail. 
-	const FRotator StartingOrient = StartingSyncState->GetOrientation_WorldSpace();
-
-	const FRotator TargetOrient = UMovementUtils::ApplyAngularVelocityToRotator(StartingOrient, ProposedMove.AngularVelocityDegrees, DeltaSeconds);
-	const bool bIsOrientationChanging = !StartingOrient.Equals(TargetOrient);
-	
-	FVector MoveDelta = ProposedMove.LinearVelocity * DeltaSeconds;
-
-	FQuat TargetOrientQuat = TargetOrient.Quaternion();
-	if (Settings->bShouldRemainVertical)
+	// Sample: sphere trace from the pelvis down one capsule half-height and place the
+	// capsule above the hit. Use GAR's actual dimensions/up vector instead of sample constants.
+	FHitResult FloorHit;
+	FCollisionQueryParams Query(SCENE_QUERY_STAT(GarRagdollFloor), false, Mover->GetOwner());
+	const bool bGrounded = UpdatedComponent->GetWorld()->SweepSingleByChannel(FloorHit, TargetLocation,
+		TargetLocation - Up * (HalfHeight + FloorGap), FQuat::Identity, ECC_Visibility,
+		FCollisionShape::MakeSphere(Radius), Query) && FVector::DotProduct(FloorHit.ImpactNormal, Up) > 0.1f;
+	if (bGrounded)
 	{
-		TargetOrientQuat = FRotationMatrix::MakeFromZX(MoverComp->GetUpDirection(), TargetOrientQuat.GetForwardVector()).ToQuat();
+		const float HeightAboveFloor = FVector::DotProduct(TargetLocation - FloorHit.ImpactPoint, Up);
+		TargetLocation += Up * FMath::Max(0.0f, HalfHeight + FloorGap - HeightAboveFloor);
 	}
 
-	FHitResult Hit(1.f);
+	const FRotator StartingOrientation = Start->GetOrientation_WorldSpace();
+	const FQuat TargetOrientation = Inputs->OrientationIntent.IsNearlyZero()
+		? StartingOrientation.Quaternion()
+		: FRotationMatrix::MakeFromZX(Up, Inputs->OrientationIntent).ToQuat();
+	const FVector MoveDelta = TargetLocation - Start->GetLocation_WorldSpace();
+	FHitResult MoveHit;
+	// The physics bodies provide collision response. Sweeping the capsule here would stop it
+	// following the body and feed a competing movement response back into the skeletal mesh.
+	UMovementUtils::TrySafeMoveAndSlideUpdatedComponentNoMovementRecord(Params.MovingComps,
+		MoveDelta, TargetOrientation, false, MoveHit, ETeleportType::None, true);
 
-	if (!MoveDelta.IsNearlyZero() || bIsOrientationChanging)
+	const FVector Velocity = (UpdatedComponent->GetComponentLocation() - Start->GetLocation_WorldSpace()) / DeltaSeconds;
+	const FVector AngularVelocity = UMovementUtils::ComputeAngularVelocityDegrees(
+		StartingOrientation, TargetOrientation.Rotator(), DeltaSeconds, -1.0f);
+	Output.SetTransforms_WorldSpace(UpdatedComponent->GetComponentLocation(),
+		UpdatedComponent->GetComponentRotation(), Velocity, AngularVelocity, nullptr);
+	Output.MoveDirectionIntent = FVector::ZeroVector;
+	UpdatedComponent->ComponentVelocity = Velocity;
+
+	UMoverBlackboard* Blackboard = Mover->GetSimBlackboard_Mutable();
+	Blackboard->Invalidate(CommonBlackboard::LastFloorResult);
+	Blackboard->Invalidate(CommonBlackboard::LastFoundDynamicMovementBase);
+
+	// Keep existing GAR animation/ability tag consumers working without two chase algorithms.
+	if (bGrounded != GameplayTags.HasTag(GarLocomotionModeTags::Grounded))
 	{
-		UMovementUtils::TrySafeMoveUpdatedComponent(Params.MovingComps, MoveDelta, TargetOrientQuat, true, Hit, ETeleportType::None, MoveRecord);
+		OutputState.MovementEndState.NextModeName = bGrounded ? TEXT("Ragdolling") : TEXT("Ragdolling In Air");
 	}
-
-	if (Hit.IsValidBlockingHit())
-	{
-		FMoverOnImpactParams ImpactParams(DefaultModeNames::Flying, Hit, MoveDelta);
-		MoverComp->HandleImpact(ImpactParams);
-
-		// Try to slide the remaining distance along the surface.
-		UMovementUtils::TryMoveToSlideAlongSurface(FMovingComponentSet(MoverComp), MoveDelta, 1.f - Hit.Time, TargetOrientQuat, Hit.Normal, Hit, true, MoveRecord);
-	}
-
-	// If we are very close to a walkable surface, make sure we maintain a small gap over it
-	FFloorCheckResult FloorUnderActor;
-	const FFloorCheckSettings FloorCheckSettings{Settings->FloorSweepDistance, Settings->MaxWalkSlopeCosine, Settings->bUseFlatBaseForFloorChecks};
-	UFloorQueryUtils::FindFloor(Params.MovingComps, FloorCheckSettings, UpdatedComponent->GetComponentLocation(), OUT FloorUnderActor);
-
-	if (FloorUnderActor.IsWalkableFloor())
-	{
-		UGroundMovementUtils::TryMoveToAdjustHeightAboveFloor(MoverComp, FloorUnderActor, Settings->MaxWalkSlopeCosine, MoveRecord);
-		if (HasGameplayTag(GarLocomotionModeTags::InAir, true))
-		{
-			OutputState.MovementEndState.NextModeName = TEXT("Ragdolling");
-		}
-	}
-	else
-	{
-		if (HasGameplayTag(GarLocomotionModeTags::Grounded, true))
-		{
-			OutputState.MovementEndState.NextModeName = TEXT("Ragdolling In Air");
-		}
-	}
-
-	CaptureFinalState(UpdatedComponent, MoveRecord, *StartingSyncState, ProposedMove.AngularVelocityDegrees, OutputSyncState, DeltaSeconds);
-}
-
-// TODO: replace this function with simply looking at/collapsing the MovementRecord
-void UGarMoverRagdollingMode::CaptureFinalState(USceneComponent* UpdatedComponent, FMovementRecord& Record, const FMoverDefaultSyncState& StartSyncState, const FVector& AngularVelocityDegrees, FMoverDefaultSyncState& OutputSyncState, const float DeltaSeconds) const
-{
-	const FVector FinalLocation = UpdatedComponent->GetComponentLocation();
-	const FVector FinalVelocity = Record.GetRelevantVelocity();
-	
-	// TODO: Update Main/large movement record with substeps from our local record
-
-	OutputSyncState.SetTransforms_WorldSpace(FinalLocation,
-											  UpdatedComponent->GetComponentRotation(),
-											  FinalVelocity,
-											  AngularVelocityDegrees,
-											  nullptr); // no movement base
-
-	UpdatedComponent->ComponentVelocity = FinalVelocity;
-}
-
-void UGarMoverRagdollingMode::OnRegistered(const FName ModeName, const FMoverSimContext& SimContext)
-{
-	Super::OnRegistered(ModeName, SimContext);
-
-	Settings = GetMoverComponent()->FindSharedSettings<UGarMovementSettings>();
-	ensureMsgf(Settings, TEXT("Failed to find instance of GarMovementSettings on %s. Movement may not function properly."), *GetPathNameSafe(this));
-}
-
-void UGarMoverRagdollingMode::OnUnregistered(const FMoverSimContext& SimContext)
-{
-	Settings = nullptr;
-
-	Super::OnUnregistered(SimContext);
 }

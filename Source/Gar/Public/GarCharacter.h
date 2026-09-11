@@ -14,7 +14,7 @@ class UMotionWarpingComponent;
 class UGarCharacterSettings;
 class UGarAnimationInstance;
 class UGarCharacterMoverComponent;
-class UGarPhysicalAnimationComponent;
+class UGarPhysicsControlComponent;
 class UGarAbilitySystemComponent;
 class UGarOverlayModeComponent;
 class UGarDeltaOverlayModeComponent;
@@ -38,7 +38,7 @@ class GAR_API AGarCharacter : public APawn, public IMoverInputProducerInterface,
 {
 	GENERATED_UCLASS_BODY()
 
-	friend UGarPhysicalAnimationComponent;
+	friend UGarPhysicsControlComponent;
 	friend UGarCharacterMoverComponent;
 
 protected:
@@ -64,7 +64,14 @@ protected:
 	TObjectPtr<UGarAbilitySystemComponent> AbilitySystem;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "GarCharacter")
-	TObjectPtr<UGarPhysicalAnimationComponent> PhysicalAnimation;
+	TObjectPtr<UGarPhysicsControlComponent> PhysicsControl;
+
+	/**
+	 * Blueprint migration alias for PhysicsControl. This does not restore the removed
+	 * UGarPhysicalAnimationComponent; Scripts/MigrateGarPhysicsControl.py rewrites old nodes.
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "GarCharacter", meta = (DeprecatedProperty, DeprecationMessage = "Use PhysicsControl instead."))
+	TObjectPtr<UGarPhysicsControlComponent> PhysicalAnimation;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "GarCharacter")
 	TObjectPtr<UGarOverlayModeComponent> OverlayModeComponent;
@@ -162,19 +169,19 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
-	/** Name of the PhysicalAnimationComponent. */
+	/** Name of the capsule component. */
 	static FName CapsuleComponentName;
 
 	// Accessor for the character's skeletal mesh component
 	FORCEINLINE UCapsuleComponent* GetCapsule() const { return Capsule; }
 
-	/** Name of the PhysicalAnimationComponent. */
+	/** Name of the prone capsule component. */
 	static FName ProneCapsuleComponentName;
 
 	// Accessor for the character's skeletal mesh component
 	FORCEINLINE UCapsuleComponent* GetProneCapsule() const { return ProneCapsule; }
 
-	/** Name of the PhysicalAnimationComponent. */
+	/** Name of the skeletal mesh component. */
 	static FName SkeletalMeshComponentName;
 
 	// Accessor for the character's skeletal mesh component
@@ -186,13 +193,13 @@ public:
 	// Accessor for the actor's movement component
 	FORCEINLINE UGarCharacterMoverComponent* GetMover() const { return CharacterMover; }
 
-	/** Name of the PhysicalAnimationComponent. */
-	static FName PhysicalAnimationComponentName;
+	/** Name of the PhysicsControlComponent. */
+	static FName PhysicsControlComponentName;
 
-	/** Returns PhysicalAnimation subobject **/
-	FORCEINLINE UGarPhysicalAnimationComponent* GetPhysicalAnimation() const { return PhysicalAnimation; }
+	/** Returns the Physics Control subobject. */
+	FORCEINLINE UGarPhysicsControlComponent* GetPhysicsControl() const { return PhysicsControl; }
 
-	/** Name of the PhysicalAnimationComponent. */
+	/** Name of the ability system component. */
 	static FName AbilitySystemComponentName;
 
 	FORCEINLINE UGarAbilitySystemComponent* GetGarAbilitySystem() const { return AbilitySystem; }
@@ -363,25 +370,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GAR|Character")
 	void SetInputStance(const FGameplayTag &NewInputStance);
 
-protected:
-	bool UpdateMainCapsule(float DeltaTime, float TargetHalfHeight, float HeightSpeed, float TargetRadius, float RadiusSpeed);
-
-	bool UpdateProneCapsule(float DeltaTime, float TargetHalfHeight, float HeightSpeed, float TargetRadius, float RadiusSpeed,
-		float TargetOffset, float OffsetSpeed);
-
-	void RefreshCapsuleSize(float DeltaTime);
-
-	void RefreshEyeHeight(float DeltaTime);
-
 private:
 	FVector MovementInputVector = FVector::ZeroVector;
 
 	bool bUnCrouchBlocked = false;
 	bool bCrouchBlocked = false;
 	bool bLieBlocked = false;
-
-	// Signal to force SimulationTick to run even with zero move delta during stance changes
-	bool bDuringStanceChange = false;
 
 	// Desired Gait
 
