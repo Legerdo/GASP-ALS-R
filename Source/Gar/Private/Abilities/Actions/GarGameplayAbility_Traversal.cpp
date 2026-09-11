@@ -972,8 +972,6 @@ void UGarGameplayAbility_Traversal::ActivateAbility(const FGameplayAbilitySpecHa
 
 	AbilitySystem->AddLooseGameplayTags(ActionTags);
 
-	Character->SetActorRotation((Parameters.FrontLedgeLocation - Character->GetActorLocation()).GetSafeNormal2D().ToOrientationRotator());
-
 	if (bOffCollisitonInAction)
 	{
 		auto CapsuleComponent{Character->GetCapsule()};

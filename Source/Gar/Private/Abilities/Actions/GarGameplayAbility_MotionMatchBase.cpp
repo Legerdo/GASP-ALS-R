@@ -25,9 +25,10 @@ FPoseSearchBlueprintResult UGarGameplayAbility_MotionMatchBase::MotionMatch(TArr
 	// Block until any in-flight parallel animation evaluation task completes.
 	// PoseHistory is written by FAnimNode_PoseSearchHistoryCollector during parallel eval (worker thread)
 	// and read here on the game thread; without synchronization this is a data race caught by UE_MT_SCOPED_WRITE_ACCESS.
+	// Complete post-evaluation too, so the evaluated pose buffers are restored before PhysicsControl reads them.
 	if (USkeletalMeshComponent* SkelMesh = AnimInstance->GetOwningComponent())
 	{
-		SkelMesh->HandleExistingParallelEvaluationTask(/*bBlockOnTask=*/true, /*bPerformPostAnimEvaluation=*/false);
+		SkelMesh->HandleExistingParallelEvaluationTask(/*bBlockOnTask=*/true, /*bPerformPostAnimEvaluation=*/true);
 	}
 
 	UPoseSearchLibrary::MotionMatch(AnimInstance, AssetsToSearch, PoseHistoryName, PoseSearchContinuingProperties, PoseSearchFuture, Result);
