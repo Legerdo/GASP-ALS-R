@@ -4,6 +4,7 @@
 #include "Engine/World.h"
 #include "State/GarPoseState.h"
 #include "State/GarCharacterMovementState.h"
+#include "State/GarBlendStackLocomotionState.h"
 #include "GarGameplayTags.h"
 #include "GarAnimationInstance.generated.h"
 
@@ -12,6 +13,7 @@ class UGarLayeringAnimInstance;
 class UGarCharacterMovementState;
 class UGarRagdollingAnimInstance;
 class AGarCharacter;
+struct FTransformTrajectory;
 
 UCLASS()
 class GAR_API UGarAnimationInstance : public UAnimInstance
@@ -59,6 +61,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State", Transient)
 	FGarCharacterMovementState CharacterMovement;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Blend Stack", Transient)
+	FGarBlendStackLocomotionState BlendStackLocomotion;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "State|Blend Stack", Transient)
+	bool bBlendStackReTransition{false};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "State|Blend Stack", Transient)
+	bool bBlendStackToLoop{false};
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "State", Transient)
 	FGarPoseState PoseState;
@@ -127,6 +138,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintPure, Category = "Movement Analysis", Meta = (BlueprintThreadSafe, ReturnDisplayName = "ReturnValue"))
 	float Speed2D() const;
+
+	/** Call after updating the GAR trajectory, before evaluating the locomotion state machine. */
+	UFUNCTION(BlueprintCallable, Category = "GAR|Blend Stack", Meta = (BlueprintThreadSafe))
+	void UpdateBlendStackLocomotion(const FTransformTrajectory& InTrajectory, const FTransform& RootTransform, float DeltaTime);
+
+	void RequestBlendStackTransition(bool bToLoop);
 
 	// Pose
 

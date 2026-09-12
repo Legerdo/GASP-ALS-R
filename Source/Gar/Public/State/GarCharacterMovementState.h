@@ -26,6 +26,12 @@ struct GAR_API FGarCharacterMovementState
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterMovement")
 	FVector UpVector{FVector::UpVector};
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterMovement")
+	FVector MovementIntent{ForceInit};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterMovement")
+	FVector GroundNormal{FVector::UpVector};
+
 	/** X = Forward Speed, Y = Strafe Speed, Z = Backwards Speed */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterMovement")
 	FVector CurrentMaxSpeed{ForceInit};
