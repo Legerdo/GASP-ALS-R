@@ -7,6 +7,8 @@
 
 class UBlueprint;
 class UPhysicsControlAsset;
+class UPhysicsAsset;
+class UChooserTable;
 
 /** Editor-only graph migration helpers for the removal of UGarPhysicalAnimationComponent. */
 UCLASS()
@@ -15,6 +17,18 @@ class GAREDITOR_API UGarPhysicsControlMigrationLibrary : public UBlueprintFuncti
 	GENERATED_BODY()
 
 public:
+	/** One-time authoring of the tag-to-profile-pair Chooser. Does not save assets. */
+	UFUNCTION(BlueprintCallable, Category = "GAR|PhysicsControl|Migration")
+	static bool ConfigureProfileChooser(UChooserTable* Table);
+
+	/** Seeds missing per-state profiles from the current baselines; preserves existing tuning. */
+	UFUNCTION(BlueprintCallable, Category = "GAR|PhysicsControl|Migration")
+	static bool CreateProfileVariants(UPhysicsControlAsset* Asset);
+
+	/** Makes the former runtime free-angle policy an explicit PA profile, without changing old profiles. */
+	UFUNCTION(BlueprintCallable, Category = "GAR|PhysicsControl|Migration")
+	static bool EnsureFreeConstraintProfile(UPhysicsAsset* Asset);
+
 	/** One-time baseline authoring. Replaces only PhysicalAnimation/Ragdoll in the supplied PCA. */
 	UFUNCTION(BlueprintCallable, Category = "GAR|PhysicsControl|Migration")
 	static bool ConfigureBaselineProfiles(UPhysicsControlAsset* Asset);

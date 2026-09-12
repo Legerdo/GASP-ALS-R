@@ -65,7 +65,7 @@ def migrate():
         raise RuntimeError("B_Gar_Character has no PhysicsControl native component")
 
     component.set_editor_property("physics_control_asset", physics_control_asset)
-    component.set_editor_property("default_control_profile_name", unreal.Name("PhysicalAnimation"))
+    component.set_editor_property("base_control_profile_name", unreal.Name("PhysicalAnimation"))
 
     unreal.BlueprintEditorLibrary.compile_blueprint(blueprint)
     if not unreal.EditorAssetLibrary.save_loaded_asset(blueprint, only_if_is_dirty=False):

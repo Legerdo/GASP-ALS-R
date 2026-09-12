@@ -57,7 +57,7 @@ character_class = unreal.EditorAssetLibrary.load_blueprint_class("/GAR/Core/B_Ga
 character = unreal.get_default_object(character_class)
 component = character.get_editor_property("physics_control")
 lines = ["PhysicsControl=" + component.get_path_name()]
-for name in ("physics_control_asset", "default_control_profile_name", "control_profile_by_tag",
+for name in ("physics_control_asset", "base_control_profile_name", "profile_chooser",
              "default_ragdoll_tag", "default_ragdoll_settings", "ragdoll_settings_by_tag"):
     value = component.get_editor_property(name)
     lines.append(name + "=" + (value.export_text() if isinstance(value, unreal.StructBase) else str(value)))
