@@ -16,7 +16,7 @@ blueprint = unreal.load_asset(blueprint_path)
 cdo = unreal.get_default_object(unreal.EditorAssetLibrary.load_blueprint_class(blueprint_path))
 component = cdo.get_editor_property("physics_control")
 component.set_editor_property("physics_control_asset", pca)
-component.set_editor_property("default_control_profile_name", unreal.Name("PhysicalAnimation"))
+component.set_editor_property("base_control_profile_name", unreal.Name("PhysicalAnimation"))
 unreal.BlueprintEditorLibrary.compile_blueprint(blueprint)
 if not unreal.EditorAssetLibrary.save_loaded_asset(blueprint, only_if_is_dirty=False):
     raise RuntimeError("Could not save GAR character defaults")

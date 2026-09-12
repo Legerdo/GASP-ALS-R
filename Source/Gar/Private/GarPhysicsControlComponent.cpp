@@ -3,14 +3,18 @@
 #include "GarPhysicsControlComponent.h"
 
 #include "AbilitySystemComponent.h"
+#include "Chooser.h"
+#include "ChooserFunctionLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/Canvas.h"
 #include "Engine/Engine.h"
 #include "PhysicsEngine/BodyInstance.h"
 #include "PhysicsEngine/PhysicsAsset.h"
+#include "PhysicsEngine/PhysicsConstraintTemplate.h"
 #include "PhysicsEngine/SkeletalBodySetup.h"
 #include "PhysicsControlBPLibrary.h"
+#include "PhysicsControlAsset.h"
 #include "UObject/StructOnScope.h"
 #include "UObject/UnrealType.h"
 #include "GarAnimationInstance.h"
@@ -85,13 +89,14 @@ void UGarPhysicsControlComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		// do not independently infer another lifecycle from the ability tags.
 		if (bRagdolling)
 		{
+			if (!RagdollStatus.bFrozen) ApplySelectedProfiles(CurrentRagdollTag);
 			TickRagdoll(DeltaTime);
 		}
 
 		if (!bRagdolling)
 		{
-			UpdatePhysicalAnimation();
-			UpdateCurveDrivenControls();
+			ApplySelectedProfiles(FGameplayTag::EmptyTag);
+			UpdateCurveDrivenPhysicsBlending();
 		}
 	}
 
@@ -168,7 +173,7 @@ bool UGarPhysicsControlComponent::StartRagdoll(const FGameplayTag& RagdollTag)
 	{
 		return false;
 	}
-	if (!ApplyProfile(Settings->ControlProfileName))
+	if (!ApplySelectedProfiles(RagdollTag, true))
 	{
 		return false;
 	}
@@ -218,7 +223,6 @@ bool UGarPhysicsControlComponent::StartRagdoll(const FGameplayTag& RagdollTag)
 		ProneCapsule->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	}
 
-	UpdateJointConstraints(true);
 	// Profile modifiers are applied on the next PCC tick. Simulate immediately so an impulse
 	// delivered by the event that started ragdoll is not lost (same as the sample).
 	Character->GetMesh()->SetAllBodiesSimulatePhysics(true);
@@ -242,13 +246,12 @@ void UGarPhysicsControlComponent::StopRagdoll()
 	}
 
 	RestoreCapsuleCollision();
-	UpdateJointConstraints(false);
 
 	bRagdolling = false;
 	CurrentRagdollTag = FGameplayTag::EmptyTag;
 	CurrentControlProfileName = NAME_None;
 	RagdollStatus = {};
-	UpdatePhysicalAnimation();
+	ApplySelectedProfiles(FGameplayTag::EmptyTag, true);
 	// Forget the old animation targets so the next PCC update cannot interpret the snapshot
 	// switch as a velocity impulse. A render-frame delay can expire BEFORE that update when
 	// the ability ends after PCC has already ticked. This does not teleport the physical bodies
@@ -332,8 +335,9 @@ void UGarPhysicsControlComponent::DisplayDebug(UCanvas* Canvas, const FDebugDisp
 	FCanvasTextItem Text(FVector2D::ZeroVector, FText::GetEmpty(), GEngine->GetSmallFont(), FLinearColor::White);
 	Text.Scale = {Scale * 0.75f, Scale * 0.75f};
 	Text.EnableShadow(FLinearColor::Black);
-	Text.Text = FText::FromString(FString::Printf(TEXT("Profile: %s | Ragdoll: %s | Grounded: %s | Frozen: %s"),
-		*CurrentControlProfileName.ToString(), bRagdolling ? TEXT("true") : TEXT("false"), RagdollStatus.bGrounded ? TEXT("true") : TEXT("false"),
+	Text.Text = FText::FromString(FString::Printf(TEXT("Control: %s | Constraint: %s | Ragdoll: %s | Grounded: %s | Frozen: %s"),
+		*CurrentControlProfileName.ToString(), *CurrentConstraintProfileName.ToString(),
+		bRagdolling ? TEXT("true") : TEXT("false"), RagdollStatus.bGrounded ? TEXT("true") : TEXT("false"),
 		RagdollStatus.bFrozen ? TEXT("true") : TEXT("false")));
 	Text.Draw(Canvas->Canvas, {HorizontalLocation, VerticalLocation});
 	VerticalLocation += 12.0f * Scale;
@@ -391,29 +395,44 @@ bool UGarPhysicsControlComponent::InitializeControls()
 				RightLegBones.Add(Body->BoneName);
 			}
 		}
-		UpdateJointConstraints(false);
-		UpdatePhysicalAnimation();
+		if (!ApplySelectedProfiles(FGameplayTag::EmptyTag, true))
+		{
+			DestroyAllControlsAndBodyModifiers();
+			LeftLegBones.Reset();
+			RightLegBones.Reset();
+			bControlsInitialized = false;
+		}
 	}
 	return bControlsInitialized;
 }
 
-FName UGarPhysicsControlComponent::FindControlProfile(const FGameplayTagContainer& GameplayTags) const
+bool UGarPhysicsControlComponent::EvaluateProfile(const FGameplayTagContainer& GameplayTags, const FGameplayTag RagdollTag,
+	FGarPhysicsControlProfileChooserResult& OutResult) const
 {
-	FName BestProfile = DefaultControlProfileName;
-	int32 BestSpecificity = INDEX_NONE;
-	for (const TPair<FGameplayTag, FName>& Pair : ControlProfileByTag)
+	OutResult = {};
+	if (!IsValid(ProfileChooser)) return false;
+
+	// Ability tags may be added after Begin(), or still be present during End(). Never let
+	// their timing take ownership of the physical ragdoll lifecycle away from the task.
+	FGameplayTagContainer EvaluationTags = GameplayTags;
+	FGameplayTagContainer RagdollTags;
+	RagdollTags.AddTag(GarLocomotionActionTags::FreeFalling);
+	RagdollTags.AddTag(GarLocomotionActionTags::Unconsious);
+	RagdollTags.AddTag(GarLocomotionActionTags::Dying);
+	RagdollTags.AddTag(DefaultRagdollTag);
+	for (const auto& Pair : RagdollSettingsByTag) RagdollTags.AddTag(Pair.Key);
+	for (const FGameplayTag& Tag : GameplayTags)
 	{
-		if (!Pair.Value.IsNone() && GameplayTags.HasTag(Pair.Key))
-		{
-			const int32 Specificity = Pair.Key.ToString().Len();
-			if (Specificity > BestSpecificity)
-			{
-				BestProfile = Pair.Value;
-				BestSpecificity = Specificity;
-			}
-		}
+		if (Tag.MatchesAny(RagdollTags)) EvaluationTags.RemoveTag(Tag);
 	}
-	return BestProfile;
+	EvaluationTags.AddTag(RagdollTag);
+
+	FChooserEvaluationContext Context;
+	Context.AddStructParam(EvaluationTags);
+	Context.AddStructParam(OutResult);
+	const FInstancedStruct Chooser = UChooserFunctionLibrary::MakeEvaluateChooser(ProfileChooser);
+	UChooserFunctionLibrary::EvaluateObjectChooserBase(Context, Chooser, nullptr);
+	return !OutResult.ControlProfileName.IsNone();
 }
 
 const FGarPhysicsControlRagdollSettings* UGarPhysicsControlComponent::GetCurrentRagdollSettings() const
@@ -430,26 +449,56 @@ const FGarPhysicsControlRagdollSettings* UGarPhysicsControlComponent::GetCurrent
 	return CurrentRagdollTag.MatchesTagExact(DefaultRagdollTag) ? &DefaultRagdollSettings : nullptr;
 }
 
-void UGarPhysicsControlComponent::UpdatePhysicalAnimation()
+bool UGarPhysicsControlComponent::ApplySelectedProfiles(const FGameplayTag RagdollTag, const bool bForce)
 {
 	if (!bControlsInitialized || !Character.IsValid())
 	{
-		return;
+		return false;
 	}
 
 	FGameplayTagContainer GameplayTags;
 	Character->GetAbilitySystemComponent()->GetOwnedGameplayTags(GameplayTags);
-	const FName DesiredProfile = FindControlProfile(GameplayTags);
-	if (DesiredProfile != CurrentControlProfileName)
+	FGarPhysicsControlProfileChooserResult Selected;
+	if (!EvaluateProfile(GameplayTags, RagdollTag, Selected))
 	{
-		if (ApplyProfile(DefaultControlProfileName) && DesiredProfile != DefaultControlProfileName)
-		{
-			ApplyProfile(DesiredProfile);
-		}
+		UE_LOG(LogGar, Error, TEXT("Physics Control ProfileChooser has no valid output on %s"), *GetPathName());
+		return false;
 	}
+	const bool bControlChanged = bForce || Selected.ControlProfileName != CurrentControlProfileName;
+	const bool bConstraintChanged = bForce || Selected.ConstraintProfileName != CurrentConstraintProfileName;
+	if (!bControlChanged && !bConstraintChanged) return true;
+
+	// Validate the pair before changing either side. Missing names must not silently select
+	// another state. Per-joint omissions in a valid PA profile still use PA defaults.
+	const UPhysicsControlAsset* Asset = PhysicsControlAsset.Get();
+	if (!Asset || !Asset->Profiles.Contains(BaseControlProfileName) || !Asset->Profiles.Contains(Selected.ControlProfileName))
+	{
+		UE_LOG(LogGar, Error, TEXT("Missing Physics Control profile '%s' or base '%s' on %s"),
+			*Selected.ControlProfileName.ToString(), *BaseControlProfileName.ToString(), *GetPathName());
+		return false;
+	}
+	const UPhysicsAsset* PhysicsAsset = Character->GetMesh()->GetPhysicsAsset();
+	if (!Selected.ConstraintProfileName.IsNone() && (!PhysicsAsset || !PhysicsAsset->ConstraintSetup.ContainsByPredicate(
+		[&Selected](const UPhysicsConstraintTemplate* Joint) { return Joint && Joint->ContainsConstraintProfile(Selected.ConstraintProfileName); })))
+	{
+		UE_LOG(LogGar, Error, TEXT("Missing constraint profile '%s' on %s"), *Selected.ConstraintProfileName.ToString(), *GetPathName());
+		return false;
+	}
+	if (bControlChanged)
+	{
+		if (!InvokeControlProfile(BaseControlProfileName)) return false;
+		if (Selected.ControlProfileName != BaseControlProfileName && !InvokeControlProfile(Selected.ControlProfileName)) return false;
+		CurrentControlProfileName = Selected.ControlProfileName;
+	}
+	if (bConstraintChanged)
+	{
+		UpdateJointConstraints(Selected.ConstraintProfileName, RagdollTag.IsValid());
+		CurrentConstraintProfileName = Selected.ConstraintProfileName;
+	}
+	return true;
 }
 
-void UGarPhysicsControlComponent::UpdateCurveDrivenControls()
+void UGarPhysicsControlComponent::UpdateCurveDrivenPhysicsBlending()
 {
 	if (!bControlsInitialized || !Character.IsValid())
 	{
@@ -464,30 +513,15 @@ void UGarPhysicsControlComponent::UpdateCurveDrivenControls()
 
 	for (const FGarPhysicsControlCurveSetMapping& Mapping : CurveSetMappings)
 	{
-		if (Mapping.CurveName.IsNone())
+		if (Mapping.CurveName.IsNone() || Mapping.BodyModifierSetName.IsNone())
 		{
 			continue;
 		}
 
 		const float LockAmount = AnimationInstance->GetCurveValueClamped01(Mapping.CurveName);
-		if (!Mapping.ControlSetName.IsNone())
-		{
-			FPhysicsControlSparseMultiplier Multiplier;
-			Multiplier.LinearStrengthMultiplier = FVector(1.0f - LockAmount);
-			Multiplier.AngularStrengthMultiplier = 1.0f - LockAmount;
-			Multiplier.bEnableLinearDampingRatioMultiplier = false;
-			Multiplier.bEnableLinearExtraDampingMultiplier = false;
-			Multiplier.bEnableMaxForceMultiplier = false;
-			Multiplier.bEnableAngularDampingRatioMultiplier = false;
-			Multiplier.bEnableAngularExtraDampingMultiplier = false;
-			Multiplier.bEnableMaxTorqueMultiplier = false;
-			SetControlSparseMultipliersInSet(Mapping.ControlSetName, Multiplier);
-		}
-
-		if (!Mapping.BodyModifierSetName.IsNone())
-		{
-			SetBodyModifiersInSetPhysicsBlendWeight(Mapping.BodyModifierSetName, 1.0f - LockAmount);
-		}
+		// Keep animation tracking active while the simulated pose is hidden. Weakening the
+		// drives here lets bodies drift before their physics pose is blended back in.
+		SetBodyModifiersInSetPhysicsBlendWeight(Mapping.BodyModifierSetName, 1.0f - LockAmount);
 	}
 }
 
@@ -595,23 +629,11 @@ void UGarPhysicsControlComponent::RefreshRagdollAnimation(const bool bActive)
 	}
 }
 
-bool UGarPhysicsControlComponent::ApplyProfile(const FName ProfileName)
-{
-	if (ProfileName.IsNone() || !InvokeControlProfile(ProfileName))
-	{
-		UE_LOG(LogGar, Error, TEXT("Missing Physics Control profile '%s' on %s"), *ProfileName.ToString(), *GetPathName());
-		return false;
-	}
-	CurrentControlProfileName = ProfileName;
-	return true;
-}
-
-void UGarPhysicsControlComponent::UpdateJointConstraints(const bool bForRagdoll)
+void UGarPhysicsControlComponent::UpdateJointConstraints(const FName ProfileName, const bool bForRagdoll)
 {
 	USkeletalMeshComponent* Mesh = Character->GetMesh();
-	// The PA still owns joint limits. Use its default limits for ragdoll and free angular
-	// limits for animation, as the sample's "Free" constraint profile does. No legacy drives.
-	Mesh->SetConstraintProfileForAll(NAME_None, true);
+	// Keep the selected PA limits. Only disable its motors: Physics Control owns the drives.
+	Mesh->SetConstraintProfileForAll(ProfileName, true);
 	for (FConstraintInstance* Constraint : Mesh->Constraints)
 	{
 		if (!Constraint) continue;
@@ -621,12 +643,6 @@ void UGarPhysicsControlComponent::UpdateJointConstraints(const bool bForRagdoll)
 		Constraint->SetAngularVelocityDriveSLERP(false);
 		Constraint->SetLinearPositionDrive(false, false, false);
 		Constraint->SetLinearVelocityDrive(false, false, false);
-		if (!bForRagdoll)
-		{
-			Constraint->SetAngularSwing1Limit(ACM_Free, 0.0f);
-			Constraint->SetAngularSwing2Limit(ACM_Free, 0.0f);
-			Constraint->SetAngularTwistLimit(ACM_Free, 0.0f);
-		}
 	}
 	if (!LeftLegBones.IsEmpty() && !RightLegBones.IsEmpty())
 	{

@@ -48,6 +48,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "ControlRig",
+			"Enabled": true
+		},
+		{
 			"Name": "AnimationLocomotionLibrary",
 			"Enabled": true
 		},

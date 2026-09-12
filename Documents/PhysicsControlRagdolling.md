@@ -22,16 +22,37 @@ retargeted to GAR's `PA_UEFN_Mannequin`. `B_Gar_Character` assigns it to the inh
 
 | Property | Purpose |
 | --- | --- |
-| `DefaultControlProfileName` | Profile active if no gameplay-tag profile matches. |
-| `ControlProfileByTag` | Gameplay tag to Control Profile mapping. More-specific tags win. |
-| `CurveSetMappings` | Animation curve to Control Set and Body Modifier Set mapping. A curve value of one suppresses the control strength. |
+| `ProfileChooser` | GameplayTagContainer to `FGarPhysicsControlProfileChooserResult`: Control Profile name and Constraint Profile name. First matching row wins. |
+| `BaseControlProfileName` | Reset recipe invoked before each selected Control Profile. Not a tag mapping. |
+| `CurveSetMappings` | Animation curve to Body Modifier Set mapping. Sets `PhysicsBlendWeight` to `1 - Clamp01(CurveValue)` without changing control strength or simulation mode. |
 | `DefaultRagdollTag` / `DefaultRagdollSettings` | GAR's built-in `Gar.LocomotionAction.Unconsious` full-ragdoll setup. |
 | `RagdollSettingsByTag` | Optional gameplay-tag-specific full-ragdoll overrides. |
 | `TopBoneName` | Body tracked by the GAR Ragdoll Mover, normally `pelvis`. |
 
-Control Profiles replace the former Physical Animation Profile/Constraint Profile/Chooser
-combination. Author the strength, damping, collision, body movement type, and named sets in the
-Physics Control Asset, not in a Skeletal Mesh Physics Asset profile.
+`CT_Gar_PAProfile` again selects both profile names using a Chooser. Author drive strength,
+damping, body movement type and sets in the Physics Control Asset; author joint limits in
+the Skeletal Mesh Physics Asset's Constraint Profiles. The old Physical Animation Profiles
+are not read. GAR disables PA joint motors after applying a Constraint Profile so they do
+not compete with Physics Control drives. `None` means PA defaults, not "leave unchanged".
+
+Eight independently editable Control Profiles are initially seeded from the two working
+baselines: Default/Traversal/Lying/InAir/Rolling from PhysicalAnimation, and
+FreeFalling/Unconsious/Dying from Ragdoll. This is selection infrastructure, not restoration
+of the old per-state physical tuning. See [profile mapping](../Docs/PhysicsControl.md).
+
+## Curve-driven physics blending
+
+Each `CurveSetMappings` entry contains only `CurveName` and `BodyModifierSetName`.
+For example, `palock_hand_r` can target a Body Modifier set containing `hand_r`.
+A curve value of zero uses the physics pose; one uses the animation pose, with
+continuous blending in between. The bodies keep simulating and the controls keep
+tracking animation using their profile settings. Do not weaken their drives while
+hiding the physics pose: that allows hidden bodies to drift and causes large
+rotations when the physics contribution returns. `ControlSetName` is no longer used.
+
+Curve overrides run during normal physical animation, not full ragdoll. The target
+must be a Body Modifier **set**, not an individual modifier name. Avoid overlapping
+sets for independent curves: a later mapping otherwise overwrites an earlier one.
 
 ## Ragdoll lifecycle
 
@@ -46,7 +67,7 @@ the remaining animation blend. Physics ownership does not require a valid overri
 instance. Physics Control advances the state it was given; it does not independently start or
 stop ragdoll from gameplay tags. While active, GAR:
 
-1. invokes the configured ragdoll Control Profile;
+1. evaluates the same profile Chooser with the task-owned ragdoll tag and applies both profile names;
 2. sets all Body Modifiers to `Simulated` and enables physics collision;
 3. disables Controls by default for a full ragdoll, or preserves them when configured;
 4. drives the Mover capsule from the `TopBoneName` physics body;
@@ -89,4 +110,8 @@ queries the current Chaos body state through the new component, and changes
 `UGarPhysicalAnimationComponent` no longer exists. `AGarCharacter::PhysicalAnimation` remains
 only as a deprecated Blueprint migration alias to the same `PhysicsControl` object, preserving
 existing graph pins; all new C++ and Blueprint work should use `PhysicsControl`. Legacy
-`UGarRagdollingSettings` and Physical Animation chooser assets do not configure the new system.
+`UGarRagdollingSettings` and Physical Animation Profiles do not configure the new system.
+`CT_Gar_PAProfile` is repurposed by `Scripts/MigrateGarPhysicsProfileChooser.py` with a new
+native output struct. Ragdoll lifecycle settings stay in `RagdollSettingsByTag`, but the
+profile names come exclusively from the Chooser. Stale ability ragdoll tags are excluded
+after task exit, so they cannot reapply the ragdoll profile during recovery.

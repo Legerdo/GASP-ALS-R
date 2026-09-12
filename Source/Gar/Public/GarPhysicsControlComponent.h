@@ -11,6 +11,21 @@ class AGarCharacter;
 class UGarRagdollingAnimInstance;
 class UCanvas;
 class FDebugDisplayInfo;
+class UChooserTable;
+
+/** Output of the GameplayTag -> Physics Control / PhysicsAsset constraint profile Chooser. */
+USTRUCT(BlueprintType)
+struct GAR_API FGarPhysicsControlProfileChooserResult
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAR|PhysicsControl")
+	FName ControlProfileName;
+
+	/** None restores the PhysicsAsset's default joint settings. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAR|PhysicsControl")
+	FName ConstraintProfileName;
+};
 
 /** Runtime state consumed by GAR's ragdoll animation, ability, task, and Mover mode. */
 USTRUCT(BlueprintType)
@@ -57,10 +72,6 @@ struct GAR_API FGarPhysicsControlRagdollSettings
 {
 	GENERATED_BODY()
 
-	/** Profile in PhysicsControlAsset to invoke before entering ragdoll. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|Ragdoll")
-	FName ControlProfileName{TEXTVIEW("Ragdoll")};
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|Ragdoll", Meta = (ClampMin = 0, ForceUnits = "s"))
 	float StartBlendTime{0.25f};
 
@@ -86,7 +97,7 @@ struct GAR_API FGarPhysicsControlRagdollSettings
 	float BodyAngularSpeedThreshold{45.0f};
 };
 
-/** Maps an animation curve to Physics Control sets. A value of one suppresses the control strength. */
+/** Maps an animation curve to a Body Modifier set. A value of one hides physics blending without weakening animation drives. */
 USTRUCT(BlueprintType)
 struct GAR_API FGarPhysicsControlCurveSetMapping
 {
@@ -95,9 +106,7 @@ struct GAR_API FGarPhysicsControlCurveSetMapping
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|PhysicsControl")
 	FName CurveName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|PhysicsControl")
-	FName ControlSetName;
-
+	/** Set whose PhysicsBlendWeight is updated to 1 - Clamp01(CurveValue). */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|PhysicsControl")
 	FName BodyModifierSetName;
 };
@@ -120,16 +129,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|PhysicsControl")
 	FName TopBoneName{TEXTVIEW("pelvis")};
 
+	/** Reads a GameplayTagContainer and writes FGarPhysicsControlProfileChooserResult. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|PhysicsControl")
-	FName DefaultControlProfileName{TEXTVIEW("PhysicalAnimation")};
+	TObjectPtr<UChooserTable> ProfileChooser;
+
+	/** Reset recipe applied before each selected Control Profile, including ragdoll profiles. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|PhysicsControl")
+	FName BaseControlProfileName{TEXTVIEW("PhysicalAnimation")};
 
 	/** Sample-style heading is derived from the pelvis-to-chest direction. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|Ragdoll")
 	FName ChestBoneName{TEXTVIEW("spine_05")};
-
-	/** More-specific matching gameplay tags take precedence over less-specific tags. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|PhysicsControl")
-	TMap<FGameplayTag, FName> ControlProfileByTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAR|PhysicsControl")
 	TMap<FGameplayTag, FGarPhysicsControlRagdollSettings> RagdollSettingsByTag;
@@ -146,6 +156,17 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "GAR|PhysicsControl")
 	bool HasRagdollSettings(const FGameplayTag& RagdollTag) const;
+
+	/** Evaluation only. RagdollTag is task-owned; empty means normal physical animation. */
+	UFUNCTION(BlueprintCallable, Category = "GAR|PhysicsControl")
+	bool EvaluateProfile(const FGameplayTagContainer& GameplayTags, FGameplayTag RagdollTag,
+		FGarPhysicsControlProfileChooserResult& OutResult) const;
+
+	UFUNCTION(BlueprintPure, Category = "GAR|PhysicsControl")
+	FName GetCurrentControlProfileName() const { return CurrentControlProfileName; }
+
+	UFUNCTION(BlueprintPure, Category = "GAR|PhysicsControl")
+	FName GetCurrentConstraintProfileName() const { return CurrentConstraintProfileName; }
 
 	UFUNCTION(BlueprintPure, Category = "GAR|PhysicsControl")
 	bool IsRagdolling() const;
@@ -188,14 +209,12 @@ public:
 
 private:
 	bool InitializeControls();
-	FName FindControlProfile(const FGameplayTagContainer& GameplayTags) const;
 	const FGarPhysicsControlRagdollSettings* GetCurrentRagdollSettings() const;
-	void UpdatePhysicalAnimation();
-	void UpdateCurveDrivenControls();
+	bool ApplySelectedProfiles(FGameplayTag RagdollTag, bool bForce = false);
+	void UpdateCurveDrivenPhysicsBlending();
 	void TickRagdoll(float DeltaTime);
 	void RefreshRagdollAnimation(bool bActive);
-	bool ApplyProfile(FName ProfileName);
-	void UpdateJointConstraints(bool bForRagdoll);
+	void UpdateJointConstraints(FName ProfileName, bool bForRagdoll);
 	void RestoreCapsuleCollision();
 
 	TWeakObjectPtr<AGarCharacter> Character;
@@ -203,6 +222,7 @@ private:
 	FGarRagdollStatus RagdollStatus;
 	FGameplayTag CurrentRagdollTag;
 	FName CurrentControlProfileName;
+	FName CurrentConstraintProfileName;
 	float TimeAfterGrounded{0.0f};
 	float TimeAfterGroundedAndStopped{0.0f};
 	uint8 bControlsInitialized : 1{false};

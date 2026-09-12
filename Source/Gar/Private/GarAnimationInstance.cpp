@@ -16,6 +16,9 @@
 #include "Abilities/Actions/GarGameplayAbility_Ragdolling.h"
 #include "Utility/GarMath.h"
 #include "Utility/GarUtility.h"
+#include "Animation/TrajectoryTypes.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "PoseSearch/PoseSearchTrajectoryLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GarAnimationInstance)
 
@@ -32,6 +35,9 @@ void UGarAnimationInstance::NativeInitializeAnimation()
 	Super::NativeInitializeAnimation();
 
 	Character = Cast<AGarCharacter>(GetOwningActor());
+	BlendStackLocomotion = FGarBlendStackLocomotionState{};
+	bBlendStackReTransition = false;
+	bBlendStackToLoop = false;
 }
 
 void UGarAnimationInstance::NativeBeginPlay()
@@ -176,6 +182,10 @@ void UGarAnimationInstance::RefreshCharacterMovementOnGameThread(float DeltaTime
 	CharacterMovement.GravityAcceleration = Mover->GetGravityAcceleration();
 	CharacterMovement.ViewRotation = Character->GetViewRotation();
 	CharacterMovement.TrajectoryPredictor = Mover->GetTrajectoryPredictor();
+	CharacterMovement.MovementIntent = Mover->GetMovementIntent();
+	FHitResult FloorHit;
+	CharacterMovement.GroundNormal = Mover->TryGetFloorCheckHitResult(FloorHit)
+		? FloorHit.ImpactNormal : CharacterMovement.UpVector;
 
 	if (CharacterMovement.GravityAcceleration.SquaredLength() > 0.001)
 	{
@@ -194,4 +204,85 @@ void UGarAnimationInstance::RefreshCharacterMovementOnGameThread(float DeltaTime
 float UGarAnimationInstance::GetCurveValueClamped01(const FName& CurveName) const
 {
 	return UGarMath::Clamp01(GetCurveValue(CurveName));
+}
+
+void UGarAnimationInstance::RequestBlendStackTransition(bool bToLoop)
+{
+	if (bToLoop) bBlendStackToLoop = true;
+	else bBlendStackReTransition = true;
+}
+
+void UGarAnimationInstance::UpdateBlendStackLocomotion(const FTransformTrajectory& InTrajectory,
+	const FTransform& RootTransform, float DeltaTime)
+{
+	auto& State = BlendStackLocomotion;
+	State.Velocity = CharacterMovement.Velocity;
+	State.Speed2D = State.Velocity.Size2D();
+	State.FutureFacingDelta_LastFrame = State.FutureFacingDelta;
+	if (!InTrajectory.Samples.IsEmpty())
+	{
+		FTransformTrajectorySample Sample;
+		UPoseSearchTrajectoryLibrary::GetTransformTrajectorySampleAtTime(InTrajectory, 1.5f, Sample);
+		State.Trj_FutureFacing = Sample.Facing.Rotator();
+		UPoseSearchTrajectoryLibrary::GetTransformTrajectoryAngularVelocity(InTrajectory, 0.0f, 0.1f, State.Trj_CurrentAngularVelocity);
+		FVector PastAngularVelocity;
+		UPoseSearchTrajectoryLibrary::GetTransformTrajectoryAngularVelocity(InTrajectory, -0.4f, -0.3f, PastAngularVelocity);
+		State.Trj_IsCircling = (State.Trj_CurrentAngularVelocity.Z > 200.0f && PastAngularVelocity.Z > 200.0f)
+			|| (State.Trj_CurrentAngularVelocity.Z < -200.0f && PastAngularVelocity.Z < -200.0f);
+		State.Trj_CirclingTime = State.Trj_IsCircling ? State.Trj_CirclingTime + DeltaTime : 0.0f;
+		float PreviousYaw = RootTransform.Rotator().Yaw;
+		State.FutureFacingDelta = 0.0f;
+		for (const float Time : {0.0f, 0.25f, 0.75f, 1.5f})
+		{
+			UPoseSearchTrajectoryLibrary::GetTransformTrajectorySampleAtTime(InTrajectory, Time, Sample);
+			const float Yaw = Sample.Facing.Rotator().Yaw;
+			State.FutureFacingDelta += FMath::FindDeltaAngleDegrees(PreviousYaw, Yaw);
+			PreviousYaw = Yaw;
+		}
+	}
+
+	State.Stance_LastFrame = State.Stance;
+	State.Stance = CurrentGameplayTags.Filter(FGameplayTagContainer(GarStanceTags::Root));
+	State.Gait_LastFrame = State.Gait;
+	State.Gait = CurrentGameplayTags.Filter(FGameplayTagContainer(GarGaitTags::Root));
+	if (State.Trj_IsCircling && State.Gait.HasTag(GarGaitTags::Sprinting)) State.Gait = FGameplayTagContainer(GarGaitTags::Running);
+
+	FGameplayTagContainer Mode = CurrentGameplayTags.Filter(FGameplayTagContainer(GarLocomotionModeTags::Root));
+	// These actions own animation states; GAS/Mover still control their gameplay and movement lifetime.
+	if (CurrentGameplayTags.HasTag(GarLocomotionActionTags::Traversal)) Mode = FGameplayTagContainer(GarLocomotionActionTags::Traversal);
+	else if (CurrentGameplayTags.HasTag(GarLocomotionActionTags::Sliding)) Mode = FGameplayTagContainer(GarLocomotionActionTags::Sliding);
+	FGarBlendStackLocomotionState::UpdateHistory(Mode, State.MovementMode, State.MovementMode_LastFrame,
+		State.MovementMode_Recent, State.MovementModeTime, DeltaTime, 0.2f);
+
+	FGameplayTag Direction = GarAnimationDirectionTags::Forward;
+	const FVector Movement = CharacterMovement.bIsGrounded ? CharacterMovement.MovementIntent : State.Velocity.GetSafeNormal2D();
+	if (!Movement.IsNearlyZero() && !CurrentGameplayTags.HasTag(GarRotationModeTags::VelocityDirection)
+		&& !State.Gait.HasTag(GarGaitTags::Sprinting))
+	{
+		const float Angle = FMath::FindDeltaAngleDegrees(CharacterMovement.ViewRotation.Yaw, Movement.Rotation().Yaw);
+		// Sample's standard strafe thresholds, with hysteresis while already strafing.
+		const bool bWasForwardOrBackward = State.MovementDirection.HasTag(GarAnimationDirectionTags::Forward)
+			|| State.MovementDirection.HasTag(GarAnimationDirectionTags::Backward);
+		const float ForwardLimit = bWasForwardOrBackward ? 60.0f : 40.0f;
+		const float BackwardLimit = bWasForwardOrBackward ? 120.0f : 140.0f;
+		if (FMath::Abs(Angle) <= ForwardLimit) Direction = GarAnimationDirectionTags::Forward;
+		else if (Angle >= -BackwardLimit && Angle < -ForwardLimit) Direction = GarAnimationDirectionTags::LeftLeftFoot;
+		else if (Angle > ForwardLimit && Angle <= BackwardLimit) Direction = GarAnimationDirectionTags::RightLeftFoot;
+		else Direction = GarAnimationDirectionTags::Backward;
+	}
+	// Preserve the Sample's reselection trigger when the future trajectory wraps through a full turn.
+	if (FMath::Abs(State.FutureFacingDelta - State.FutureFacingDelta_LastFrame) > 200.0f && State.Speed2D > 50.0f)
+	{
+		State.MovementDirection = FGameplayTagContainer(GarAnimationDirectionTags::Backward);
+		State.MovementDirection_Recent = State.MovementDirection;
+	}
+	FGarBlendStackLocomotionState::UpdateHistory(FGameplayTagContainer(Direction), State.MovementDirection,
+		State.MovementDirection_LastFrame, State.MovementDirection_Recent, State.MovementDirectionTime, DeltaTime, 0.1f);
+
+	State.SmoothedGroundNormal = FMath::VInterpTo(State.SmoothedGroundNormal, CharacterMovement.GroundNormal, DeltaTime, 10.0f);
+	float Pitch, Roll;
+	UKismetMathLibrary::GetSlopeDegreeAngles(RootTransform.GetRotation().GetRightVector(), State.SmoothedGroundNormal,
+		RootTransform.GetRotation().GetUpVector(), Pitch, Roll);
+	State.SlopeAngle = FVector2D(Roll, Pitch);
+	State.AO = FVector2D(FMath::FindDeltaAngleDegrees(RootTransform.Rotator().Yaw, CharacterMovement.ViewRotation.Yaw), ViewPitchAngle);
 }

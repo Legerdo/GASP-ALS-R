@@ -1,0 +1,2553 @@
+{
+  "source_project": "GameAnimationSample",
+  "source_engine": "5.8.2",
+  "target_anim_blueprint": "/GAR/Core/AnimationInstances/AB_Gar",
+  "assets": [
+    {
+      "source": "/Game/Audio/Foley/MetaSounds/Parents/MSS_FoleySound",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/MetaSounds/Parents/MSS_FoleySound",
+      "exists": false,
+      "class": "MetaSoundSource"
+    },
+    {
+      "source": "/Game/Audio/Foley/MetaSounds/Presets/MSS_FoleySound_Handplant",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/MetaSounds/Presets/MSS_FoleySound_Handplant",
+      "exists": false,
+      "class": "MetaSoundSource"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_01",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_01",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_02",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_02",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_03",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_03",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_04",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_04",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_05",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_05",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_06",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_06",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_07",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_07",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_08",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_08",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_09",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_09",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_10",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_10",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_11",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_11",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_12",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_12",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_13",
+      "target": "/GAR/Audio/SampleLocomotion/Foley/SoundWaves/Hand/Concrete/Foley_hs_1p_barehand_concrete_plant_13",
+      "exists": false,
+      "class": "SoundWave"
+    },
+    {
+      "source": "/Game/Audio/Mix/Effects/SMFX_Reverb_Default",
+      "target": "/GAR/Audio/SampleLocomotion/Mix/Effects/SMFX_Reverb_Default",
+      "exists": false,
+      "class": "SubmixEffectReverbPreset"
+    },
+    {
+      "source": "/Game/Audio/Mix/SM_Ambient",
+      "target": "/GAR/Audio/SampleLocomotion/Mix/SM_Ambient",
+      "exists": false,
+      "class": "SoundSubmix"
+    },
+    {
+      "source": "/Game/Audio/Mix/SM_Final",
+      "target": "/GAR/Audio/SampleLocomotion/Mix/SM_Final",
+      "exists": false,
+      "class": "SoundSubmix"
+    },
+    {
+      "source": "/Game/Audio/Mix/SM_Foley",
+      "target": "/GAR/Audio/SampleLocomotion/Mix/SM_Foley",
+      "exists": false,
+      "class": "SoundSubmix"
+    },
+    {
+      "source": "/Game/Audio/Mix/SM_Reverb",
+      "target": "/GAR/Audio/SampleLocomotion/Mix/SM_Reverb",
+      "exists": false,
+      "class": "SoundSubmix"
+    },
+    {
+      "source": "/Game/Blueprints/Data/S_BlendStackInputs",
+      "target": "/GAR/Core/AnimationInstances/LocomotionData/S_BlendStackInputs",
+      "exists": false,
+      "class": "UserDefinedStruct",
+      "native_replacement": "/Script/GAR.GarBlendStackInputs"
+    },
+    {
+      "source": "/Game/Blueprints/Data/S_CHT_MoverCharacterAnimations_OUT",
+      "target": "/GAR/Core/AnimationInstances/LocomotionData/S_CHT_MoverCharacterAnimations_OUT",
+      "exists": false,
+      "class": "UserDefinedStruct",
+      "native_replacement": "/Script/GAR.GarLocomotionChooserOutput"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Neutral_Crouch_Idle_Turn_090_L",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Neutral_Crouch_Idle_Turn_090_L",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Neutral_Crouch_Idle_Turn_090_R",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Neutral_Crouch_Idle_Turn_090_R",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Neutral_Crouch_Idle_Turn_180_L",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Neutral_Crouch_Idle_Turn_180_L",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Neutral_Crouch_Idle_Turn_180_R",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Neutral_Crouch_Idle_Turn_180_R",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Neutral_Transition_Crouch_to_Stand",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Neutral_Transition_Crouch_to_Stand",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Neutral_Transition_Stand_to_Crouch",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Neutral_Transition_Stand_to_Crouch",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_B_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_B_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_B_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_B_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_B_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_B_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_B_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_B_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_F_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_F_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_F_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_F_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_F_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_F_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_F_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_F_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_LL_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_LL_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_LL_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_LL_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_LL_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_LL_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_LL_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_LL_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_RL_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_RL_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_RL_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_RL_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_RL_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_RL_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Box_RL_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Box_RL_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Loop_B",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Loop_B",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Loop_F",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Loop_F",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Loop_LL",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Loop_LL",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Loop_RL",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Loop_RL",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Pivot_B_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Pivot_B_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Pivot_B_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Pivot_B_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Pivot_F_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Pivot_F_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Pivot_F_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Pivot_F_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Pivot_LL_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Pivot_LL_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Pivot_LL_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Pivot_LL_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Pivot_RL_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Pivot_RL_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Pivot_RL_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Pivot_RL_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Start_090_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Start_090_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Start_090_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Start_090_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Start_180_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Start_180_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Start_180_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Start_180_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Start_B_090_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Start_B_090_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Start_B_090_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Start_B_090_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Start_B_180_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Start_B_180_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Start_B_180_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Start_B_180_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Stop_090_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Stop_090_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Stop_090_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Stop_090_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Stop_090_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Stop_090_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Stop_090_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Stop_090_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Stop_180_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Stop_180_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Stop_180_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Stop_180_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Stop_180_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Stop_180_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Reface_Stop_180_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Reface_Stop_180_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_360_F_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_360_F_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_360_F_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_360_F_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_360_F_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_360_F_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_360_F_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_360_F_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_B_F_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_B_F_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_B_F_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_B_F_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_B_F_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_B_F_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_B_F_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_B_F_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_B_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_B_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_B_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_B_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_F_B_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_F_B_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_F_B_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_F_B_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_F_B_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_F_B_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_F_B_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_F_B_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_F_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_F_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_F_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_F_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_LL_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_LL_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_LL_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_LL_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_RL_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_RL_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Spin_RL_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Spin_RL_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Start_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Start_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Start_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Start_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Start_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Start_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Start_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Start_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Start_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Start_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Start_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Start_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Stop_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Stop_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Stop_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Stop_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Stop_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Stop_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Stop_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Stop_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Stop_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Stop_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Stop_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Stop_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Stop_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Stop_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Stop_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Stop_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Turn_090_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Turn_090_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Turn_090_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Turn_090_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Turn_090_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Turn_090_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Turn_090_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Turn_090_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Turn_180_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Turn_180_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Turn_180_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Turn_180_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Turn_180_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Turn_180_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Crouch_Turn_180_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Crouch_Turn_180_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Transition_Crouch_to_Stand",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Transition_Crouch_to_Stand",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Crouch/M_Relaxed_Transition_Stand_to_Crouch",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Crouch/A_Relaxed_Transition_Stand_to_Crouch",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSD_SM_CMC_Idles",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSD_SM_CMC_Idles",
+      "exists": false,
+      "class": "PoseSearchDatabase"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_CMC_Idles",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_CMC_Idles",
+      "exists": false,
+      "class": "PoseSearchSchema"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_Mover_Loops",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_Mover_Loops",
+      "exists": false,
+      "class": "PoseSearchSchema"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_Mover_Spins",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_Mover_Spins",
+      "exists": false,
+      "class": "PoseSearchSchema"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_Mover_Stops",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_Mover_Stops",
+      "exists": false,
+      "class": "PoseSearchSchema"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_Mover_Transitions",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_Mover_Transitions",
+      "exists": false,
+      "class": "PoseSearchSchema"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_Mover_TraversalTransitions",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/PSS_SM_Mover_TraversalTransitions",
+      "exists": false,
+      "class": "PoseSearchSchema"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Neutral_Crouch_Idle_Break_v01",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Neutral_Crouch_Idle_Break_v01",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Neutral_Crouch_Idle_Break_v02",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Neutral_Crouch_Idle_Break_v02",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Neutral_Crouch_Idle_Break_v03",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Neutral_Crouch_Idle_Break_v03",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Neutral_Crouch_Idle_Break_v04",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Neutral_Crouch_Idle_Break_v04",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Neutral_Crouch_Idle_Break_v05",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Neutral_Crouch_Idle_Break_v05",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Neutral_Crouch_Idle_Loop",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Neutral_Crouch_Idle_Loop",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Neutral_Stand_Idle_Loop",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Neutral_Stand_Idle_Loop",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Idle_Break_v01",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Idle_Break_v01",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Idle_Break_v02",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Idle_Break_v02",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Idle_Break_v03",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Idle_Break_v03",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Idle_Break_v04",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Idle_Break_v04",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Idle_Break_v05",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Idle_Break_v05",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Idle_Break_v06",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Idle_Break_v06",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Idle_Break_v07",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Idle_Break_v07",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Idle_Break_v08",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Idle_Break_v08",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Idle_Loop",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Idle_Loop",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Turn_090_L",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Turn_090_L",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Turn_090_R",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Turn_090_R",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Turn_180_L",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Turn_180_L",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Relaxed_Stand_Turn_180_R",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Idle/A_Relaxed_Stand_Turn_180_R",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_B_Land_Run_Heavy",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_B_Land_Run_Heavy",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_B_Land_Run_Light",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_B_Land_Run_Light",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_B_Land_Stand_Heavy_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_B_Land_Stand_Heavy_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_B_Land_Stand_Heavy_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_B_Land_Stand_Heavy_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_B_Land_Stand_Light_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_B_Land_Stand_Light_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_B_Land_Stand_Light_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_B_Land_Stand_Light_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_B_Land_Walk_Heavy",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_B_Land_Walk_Heavy",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_B_Land_Walk_Light",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_B_Land_Walk_Light",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_B_Off_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_B_Off_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_B_Start_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_B_Start_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_B_Start_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_B_Start_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Run_Heavy_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Run_Heavy_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Run_Heavy_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Run_Heavy_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Run_Light_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Run_Light_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Run_Light_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Run_Light_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Sprint_Heavy_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Sprint_Heavy_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Sprint_Heavy_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Sprint_Heavy_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Sprint_Light_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Sprint_Light_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Sprint_Light_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Sprint_Light_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Stand_Heavy_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Stand_Heavy_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Stand_Heavy_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Stand_Heavy_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Stand_Light_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Stand_Light_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Stand_Light_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Stand_Light_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Walk_Heavy_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Walk_Heavy_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Walk_Heavy_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Walk_Heavy_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Walk_Light_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Walk_Light_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Land_Walk_Light_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Land_Walk_Light_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Off_Run_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Off_Run_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Off_Run_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Off_Run_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Off_Walk_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Off_Walk_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Off_Walk_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Off_Walk_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Start_Run_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Start_Run_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Start_Run_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Start_Run_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Start_Sprint_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Start_Sprint_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Start_Sprint_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Start_Sprint_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Start_Stand_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Start_Stand_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Start_Stand_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Start_Stand_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Start_Walk_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Start_Walk_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_F_Start_Walk_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_F_Start_Walk_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_LL_Land_Run_Heavy",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_LL_Land_Run_Heavy",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_LL_Land_Run_Light",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_LL_Land_Run_Light",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_LL_Land_Walk_Heavy",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_LL_Land_Walk_Heavy",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_LL_Land_Walk_Light",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_LL_Land_Walk_Light",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_LR_Off_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_LR_Off_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_LR_Start_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_LR_Start_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_LR_Start_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_LR_Start_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_Loop_Fall",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_Loop_Fall",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_RL_Land_Run_Heavy",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_RL_Land_Run_Heavy",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_RL_Land_Run_Light",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_RL_Land_Run_Light",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_RL_Land_Walk_Heavy",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_RL_Land_Walk_Heavy",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_RL_Land_Walk_Light",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_RL_Land_Walk_Light",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_RL_Off_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_RL_Off_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_RL_Start_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_RL_Start_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Jump/M_Relaxed_Jump_RL_Start_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Jump/A_Relaxed_Jump_RL_Start_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/BS_Relaxed_Run_Loop_F_Slopes",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/BS_Relaxed_Run_Loop_F_Slopes",
+      "exists": false,
+      "class": "BlendSpace1D"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_B_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_B_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_B_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_B_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_B_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_B_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_B_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_B_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_F_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_F_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_F_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_F_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_F_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_F_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_F_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_F_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_LL_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_LL_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_LL_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_LL_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_LL_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_LL_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_LL_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_LL_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_RL_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_RL_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_RL_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_RL_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_RL_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_RL_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Box_RL_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Box_RL_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Loop_B",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Loop_B",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Loop_F",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Loop_F",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Loop_LL",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Loop_LL",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Loop_RL",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Loop_RL",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Pivot_B_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Pivot_B_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Pivot_B_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Pivot_B_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Pivot_F_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Pivot_F_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Pivot_F_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Pivot_F_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Pivot_LL_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Pivot_LL_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Pivot_LL_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Pivot_LL_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Pivot_RL_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Pivot_RL_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Pivot_RL_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Pivot_RL_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Start_090_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Start_090_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Start_090_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Start_090_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Start_180_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Start_180_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Start_180_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Start_180_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Start_B_090_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Start_B_090_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Start_B_090_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Start_B_090_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Start_B_180_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Start_B_180_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Start_B_180_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Start_B_180_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Stop_090_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Stop_090_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Stop_090_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Stop_090_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Stop_090_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Stop_090_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Stop_090_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Stop_090_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Stop_180_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Stop_180_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Stop_180_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Stop_180_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Stop_180_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Stop_180_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Reface_Stop_180_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Reface_Stop_180_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Slope_down_Loop_F",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Slope_down_Loop_F",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Slope_up_Loop_F",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Slope_up_Loop_F",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_B_F_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_B_F_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_B_F_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_B_F_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_B_F_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_B_F_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_B_F_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_B_F_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_F_360_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_F_360_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_F_360_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_F_360_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_F_360_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_F_360_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_F_360_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_F_360_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_F_B_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_F_B_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_F_B_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_F_B_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_F_B_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_F_B_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_F_B_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_F_B_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_LL_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_LL_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Spin_RL_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Spin_RL_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Start_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Start_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Start_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Start_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Start_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Start_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Start_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Start_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Start_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Start_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Start_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Start_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Stop_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Stop_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Stop_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Stop_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Stop_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Stop_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Stop_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Stop_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Stop_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Stop_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Stop_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Stop_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Stop_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Stop_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Stop_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Stop_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Switch_LR_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Switch_LR_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Switch_LR_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Switch_LR_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Switch_RR_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Switch_RR_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Turn_L_090_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Turn_L_090_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Turn_L_090_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Turn_L_090_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Turn_L_180_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Turn_L_180_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Turn_L_180_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Turn_L_180_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Turn_R_090_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Turn_R_090_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Turn_R_090_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Turn_R_090_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Turn_R_180_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Turn_R_180_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Run_Turn_R_180_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Run_Turn_R_180_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Transition_Sprint_to_Run_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Transition_Sprint_to_Run_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Transition_Sprint_to_Run_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Transition_Sprint_to_Run_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Transition_Walk_to_Run_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Transition_Walk_to_Run_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Run/M_Relaxed_Transition_Walk_to_Run_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Run/A_Relaxed_Transition_Walk_to_Run_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Slide/M_Relaxed_Slide_FootOut_Into_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Slide/A_Relaxed_Slide_FootOut_Into_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Slide/M_Relaxed_Slide_FootOut_Loop",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Slide/A_Relaxed_Slide_FootOut_Loop",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Slide/M_Relaxed_Slide_FootOut_Out_Idle_Crouch",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Slide/A_Relaxed_Slide_FootOut_Out_Idle_Crouch",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Slide/M_Relaxed_Slide_FootOut_Out_Idle_Stand",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Slide/A_Relaxed_Slide_FootOut_Out_Idle_Stand",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Slide/M_Relaxed_Slide_FootOut_Out_Moving_Crouch",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Slide/A_Relaxed_Slide_FootOut_Out_Moving_Crouch",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Slide/M_Relaxed_Slide_FootOut_Out_Moving_Run",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Slide/A_Relaxed_Slide_FootOut_Out_Moving_Run",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Slide/M_Relaxed_Slide_FootOut_Out_Moving_Walk",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Slide/A_Relaxed_Slide_FootOut_Out_Moving_Walk",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Slide/M_Relaxed_Slide_KneesOut_Into_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Slide/A_Relaxed_Slide_KneesOut_Into_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Slide/M_Relaxed_Slide_KneesOut_Loop",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Slide/A_Relaxed_Slide_KneesOut_Loop",
+      "exists": true,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Loop_F",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Loop_F",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Reface_Start_090_L",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Reface_Start_090_L",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Reface_Start_090_R",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Reface_Start_090_R",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Reface_Start_180_L",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Reface_Start_180_L",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Reface_Start_180_R",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Reface_Start_180_R",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Start_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Start_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Stop_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Stop_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Stop_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Stop_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Turn_090_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Turn_090_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Turn_090_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Turn_090_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Turn_090_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Turn_090_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Turn_090_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Turn_090_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Turn_180_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Turn_180_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Turn_180_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Turn_180_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Turn_180_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Turn_180_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Sprint_Turn_180_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Sprint_Turn_180_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Transition_Run_to_Sprint_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Transition_Run_to_Sprint_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Transition_Run_to_Sprint_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Transition_Run_to_Sprint_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Transition_Walk_to_Sprint_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Transition_Walk_to_Sprint_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Sprint/M_Relaxed_Transition_Walk_to_Sprint_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Sprint/A_Relaxed_Transition_Walk_to_Sprint_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/M_Relaxed_Traversal_Hurdle_1_0_run_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/A_Relaxed_Traversal_Hurdle_1_0_run_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/M_Relaxed_Traversal_Hurdle_1_0_run_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/A_Relaxed_Traversal_Hurdle_1_0_run_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/M_Relaxed_Traversal_Hurdle_1_0_run_F_V2_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/A_Relaxed_Traversal_Hurdle_1_0_run_F_V2_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/M_Relaxed_Traversal_Hurdle_1_0_run_F_V2_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/A_Relaxed_Traversal_Hurdle_1_0_run_F_V2_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/M_Relaxed_Traversal_Hurdle_1_0_walk_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/A_Relaxed_Traversal_Hurdle_1_0_walk_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/M_Relaxed_Traversal_Hurdle_1_0_walk_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/A_Relaxed_Traversal_Hurdle_1_0_walk_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/M_Relaxed_Traversal_Hurdle_1_0_walk_F_V2_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/A_Relaxed_Traversal_Hurdle_1_0_walk_F_V2_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/M_Relaxed_Traversal_Hurdle_1_0_walk_F_V2_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Hurdle/A_Relaxed_Traversal_Hurdle_1_0_walk_F_V2_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Mantle/M_Relaxed_Traversal_Mantle_1_0_run_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Mantle/A_Relaxed_Traversal_Mantle_1_0_run_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Mantle/M_Relaxed_Traversal_Mantle_1_0_run_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Mantle/A_Relaxed_Traversal_Mantle_1_0_run_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Mantle/M_Relaxed_Traversal_Mantle_1_0_walk_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Mantle/A_Relaxed_Traversal_Mantle_1_0_walk_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Traversal/Mantle/M_Relaxed_Traversal_Mantle_1_0_walk_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Traversal/Mantle/A_Relaxed_Traversal_Mantle_1_0_walk_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/BS_Relaxed_Walk_Loop_F_Slopes",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/BS_Relaxed_Walk_Loop_F_Slopes",
+      "exists": false,
+      "class": "BlendSpace1D"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Transition_Run_to_Walk_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Transition_Run_to_Walk_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Transition_Run_to_Walk_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Transition_Run_to_Walk_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Transition_Sprint_to_Walk_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Transition_Sprint_to_Walk_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Transition_Sprint_to_Walk_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Transition_Sprint_to_Walk_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_B_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_B_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_B_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_B_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_B_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_B_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_B_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_B_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_F_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_F_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_F_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_F_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_F_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_F_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_F_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_F_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_LL_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_LL_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_LL_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_LL_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_LL_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_LL_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_LL_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_LL_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_RL_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_RL_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_RL_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_RL_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_RL_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_RL_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Box_RL_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Box_RL_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Loop_B",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Loop_B",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Loop_F",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Loop_F",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Loop_LL",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Loop_LL",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Loop_RL",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Loop_RL",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Pivot_B_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Pivot_B_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Pivot_B_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Pivot_B_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Pivot_F_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Pivot_F_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Pivot_F_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Pivot_F_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Pivot_LL_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Pivot_LL_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Pivot_LL_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Pivot_LL_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Pivot_RL_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Pivot_RL_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Pivot_RL_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Pivot_RL_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Start_090_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Start_090_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Start_090_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Start_090_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Start_180_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Start_180_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Start_180_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Start_180_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Start_B_090_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Start_B_090_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Start_B_090_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Start_B_090_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Start_B_180_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Start_B_180_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Start_B_180_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Start_B_180_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Stop_090_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Stop_090_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Stop_090_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Stop_090_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Stop_090_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Stop_090_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Stop_090_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Stop_090_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Stop_180_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Stop_180_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Stop_180_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Stop_180_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Stop_180_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Stop_180_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Reface_Stop_180_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Reface_Stop_180_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Slope_down_Loop_F",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Slope_down_Loop_F",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Slope_up_Loop_F",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Slope_up_Loop_F",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_B_F_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_B_F_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_B_F_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_B_F_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_B_F_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_B_F_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_B_F_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_B_F_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_B_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_B_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_F_360_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_F_360_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_F_360_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_F_360_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_F_360_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_F_360_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_F_360_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_F_360_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_F_B_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_F_B_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_F_B_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_F_B_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_F_B_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_F_B_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_F_B_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_F_B_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_F_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_F_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_F_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_F_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_LL_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_LL_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_LL_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_LL_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_RL_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_RL_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Spin_RL_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Spin_RL_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Start_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Start_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Start_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Start_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Start_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Start_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Start_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Start_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Start_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Start_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Start_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Start_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Stop_B_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Stop_B_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Stop_B_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Stop_B_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Stop_F_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Stop_F_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Stop_F_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Stop_F_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Stop_LL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Stop_LL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Stop_LL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Stop_LL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Stop_RL_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Stop_RL_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Stop_RL_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Stop_RL_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Turn_090_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Turn_090_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Turn_090_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Turn_090_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Turn_090_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Turn_090_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Turn_090_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Turn_090_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Turn_180_L_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Turn_180_L_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Turn_180_L_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Turn_180_L_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Turn_180_R_Lfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Turn_180_R_Lfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/Walk/M_Relaxed_Walk_Turn_180_R_Rfoot",
+      "target": "/GAR/Characters/UEFN_Mannequin/Animations/Walk/A_Relaxed_Walk_Turn_180_R_Rfoot",
+      "exists": false,
+      "class": "AnimSequence"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Meshes/SK_UEFN_Mannequin",
+      "target": "/GAR/Characters/UEFN_Mannequin/Meshes/SK_UEFN_Mannequin",
+      "exists": true,
+      "class": "Skeleton"
+    },
+    {
+      "source": "/Game/Misc/SandboxAnimCurveCompressionSettings",
+      "target": "/GAR/Core/AnimationInstances/LocomotionData/GarLocomotionCurveCompressionSettings",
+      "exists": false,
+      "class": "AnimCurveCompressionSettings"
+    },
+    {
+      "source": "/Game/Blueprints/SandboxCharacter_Mover_ABP",
+      "target": "/GAR/Core/AnimationInstances/AB_Gar",
+      "exists": true,
+      "class": "AnimBlueprint"
+    },
+    {
+      "source": "/Game/Characters/UEFN_Mannequin/Animations/ExperimentalStateMachineData/CHT_MoverCharacterAnimations_PoseMatch",
+      "target": "/GAR/Core/AnimationInstances/LocomotionData/CHT_GarCharacterAnimations_PoseMatch",
+      "exists": false,
+      "class": "ChooserTable"
+    }
+  ]
+}
