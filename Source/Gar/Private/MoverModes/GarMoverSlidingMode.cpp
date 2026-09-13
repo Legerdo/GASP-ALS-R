@@ -2,11 +2,57 @@
 
 #include "MoverModes/GarMoverSlidingMode.h"
 
+#include "State/GarSlidingState.h"
 #include "GarCharacterMoverComponent.h"
 #include "GarGameplayTags.h"
+#include "Math/RotationMatrix.h"
 #include "MoverComponent.h"
+#include "MoverDataModelTypes.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GarMoverSlidingMode)
+
+namespace GarSlidingMode
+{
+	FVector GetPlanarDirection(const FVector& Direction, const FVector& UpDirection)
+	{
+		return (Direction - Direction.ProjectOnTo(UpDirection)).GetSafeNormal();
+	}
+
+	FVector GetInitialHeading(const FMoverTickStartData& StartState, const FVector& UpDirection)
+	{
+		if (const FMoverDefaultSyncState* StartingSyncState = StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>())
+		{
+			if (const FVector VelocityHeading = GetPlanarDirection(StartingSyncState->GetVelocity_WorldSpace(), UpDirection);
+				!VelocityHeading.IsNearlyZero())
+			{
+				return VelocityHeading;
+			}
+
+			if (const FVector IntentHeading = GetPlanarDirection(StartingSyncState->GetIntent_WorldSpace(), UpDirection);
+				!IntentHeading.IsNearlyZero())
+			{
+				return IntentHeading;
+			}
+
+			if (const FVector FacingHeading = GetPlanarDirection(StartingSyncState->GetOrientation_WorldSpace().Quaternion().GetForwardVector(), UpDirection);
+				!FacingHeading.IsNearlyZero())
+			{
+				return FacingHeading;
+			}
+		}
+
+		if (const FCharacterDefaultInputs* CharacterInputs = StartState.InputCmd.InputCollection.FindDataByType<FCharacterDefaultInputs>())
+		{
+			if (const FVector InputHeading = GetPlanarDirection(CharacterInputs->GetMoveInput_WorldSpace(), UpDirection);
+				!InputHeading.IsNearlyZero())
+			{
+				return InputHeading;
+			}
+		}
+
+		return FVector::ForwardVector;
+	}
+}
 
 UGarMoverSlidingMode::UGarMoverSlidingMode()
 {
@@ -39,6 +85,16 @@ void UGarMoverSlidingMode::Activate(const FMoverEventContext& Context, FName Pre
 	}
 
 	Super::Activate(Context, PrevModeName, SimContext, StartState, OutSyncState, OutAuxState);
+
+	if (OutSyncState != nullptr)
+	{
+		const UMoverComponent* MoverComponent = GetMoverComponent();
+		const FVector UpDirection = IsValid(MoverComponent) ? MoverComponent->GetUpDirection() : FVector::UpVector;
+
+		FGarSlidingState& SlidingState = OutSyncState->SyncStateCollection.FindOrAddMutableDataByType<FGarSlidingState>();
+		SlidingState.Heading = GarSlidingMode::GetInitialHeading(StartState, UpDirection);
+		SlidingState.bHasHeading = true;
+	}
 }
 
 void UGarMoverSlidingMode::Deactivate(const FMoverEventContext& Context, FName NextModeName, const FMoverSimContext& SimContext)
@@ -60,6 +116,12 @@ void UGarMoverSlidingMode::OnInitialBoostExpired()
 void UGarMoverSlidingMode::SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 {
 	Super::SimulationTick_Implementation(Params, OutputState);
+
+	// GenerateWalkMove で更新した方位を次フレームへ渡す。
+	if (const FGarSlidingState* InSlidingState = Params.StartState.SyncState.SyncStateCollection.FindDataByType<FGarSlidingState>())
+	{
+		OutputState.SyncState.SyncStateCollection.FindOrAddMutableDataByType<FGarSlidingState>() = *InSlidingState;
+	}
 
 	if (OutputState.MovementEndState.NextModeName != NAME_None)
 	{
@@ -95,8 +157,45 @@ void UGarMoverSlidingMode::GenerateWalkMove_Implementation(
 	FVector& InOutAngularVelocityDegrees,
 	FVector& InOutVelocity)
 {
-	// スロープ角を先に計算し、今フレームの Super 計算に反映させる
-	// BPと同様に移動方向に対する符号付き角度: 上り坂=負、下り坂=正、平地=0
+	const UMoverComponent* MoverComponent = GetMoverComponent();
+	if (!IsValid(MoverComponent))
+	{
+		Super::GenerateWalkMove_Implementation(
+			StartState, DeltaSeconds, SimContext,
+			DesiredVelocity, DesiredFacing, CurrentFacing,
+			InOutAngularVelocityDegrees, InOutVelocity);
+		return;
+	}
+
+	const FVector UpDirection = MoverComponent->GetUpDirection();
+	bool bSlidingStateAdded = false;
+	FGarSlidingState& SlidingState = StartState.SyncState.SyncStateCollection.FindOrAddMutableDataByType<FGarSlidingState>(bSlidingStateAdded);
+	if (bSlidingStateAdded || !SlidingState.bHasHeading)
+	{
+		SlidingState.Heading = GarSlidingMode::GetInitialHeading(StartState, UpDirection);
+		SlidingState.bHasHeading = true;
+	}
+
+	float SteeringInput = 0.0f;
+	if (const FCharacterDefaultInputs* CharacterInputs = StartState.InputCmd.InputCollection.FindDataByType<FCharacterDefaultInputs>())
+	{
+		const FRotator InputControlYaw(0.0f, CharacterInputs->ControlRotation.Yaw, 0.0f);
+		const FVector InputRight = FRotationMatrix(InputControlYaw).GetUnitAxis(EAxis::Y);
+		SteeringInput = FMath::Clamp(
+			FVector::DotProduct(CharacterInputs->GetMoveInput_WorldSpace(), InputRight),
+			-1.0f, 1.0f);
+	}
+
+	const float TurnRadians = FMath::DegreesToRadians(SteeringInput * static_cast<float>(SteeringTurnRate) * DeltaSeconds);
+	SlidingState.Heading = GarSlidingMode::GetPlanarDirection(
+		FQuat(UpDirection, TurnRadians).RotateVector(SlidingState.Heading), UpDirection);
+	if (SlidingState.Heading.IsNearlyZero())
+	{
+		SlidingState.Heading = GarSlidingMode::GetInitialHeading(StartState, UpDirection);
+	}
+
+	// スロープ角を先に計算し、今フレームの Super 計算に反映させる。
+	// 滑走方位に対する符号付き角度: 上り坂=負、下り坂=正、平地=0。
 
 	FHitResult FloorHit;
 	const bool bHasFloor = GetMoverComponent()->TryGetFloorCheckHitResult(FloorHit);
@@ -104,7 +203,7 @@ void UGarMoverSlidingMode::GenerateWalkMove_Implementation(
 	float SlopeAngle = 0.0f;
 	if (bHasFloor)
 	{
-		const FVector VelDir = DesiredVelocity.GetSafeNormal();
+		const FVector VelDir = SlidingState.Heading;
 		if (!VelDir.IsNearlyZero(UE_KINDA_SMALL_NUMBER))
 		{
 			const float DotVal = FVector::DotProduct(FloorHit.Normal.GetSafeNormal(), VelDir);
@@ -141,28 +240,13 @@ void UGarMoverSlidingMode::GenerateWalkMove_Implementation(
 		FVector2D(FlatGroundDeceleration, SteepSlopeDeceleration),
 		static_cast<double>(SlopeAngle)));
 
-	// 曲げ処理: 入力の直交成分のみで DesiredVelocity の方向を調整（速さは維持）
-	// 平行成分は無視 → スライディング中に前後入力で加速/減速しない
-	FVector ModifiedDesiredVelocity = DesiredVelocity;
-	const FVector CurrentVel2D(InOutVelocity.X, InOutVelocity.Y, 0.0f);
-	const float CurrentSpeed2D = CurrentVel2D.Size();
-	const float DesiredSpeed2D = FVector(DesiredVelocity.X, DesiredVelocity.Y, 0.0f).Size();
-	if (CurrentSpeed2D > UE_KINDA_SMALL_NUMBER && DesiredSpeed2D > UE_KINDA_SMALL_NUMBER)
-	{
-		const FVector CurrentDir = CurrentVel2D / CurrentSpeed2D;
-		const FVector InputDir2D = FVector(DesiredVelocity.X, DesiredVelocity.Y, 0.0f) / DesiredSpeed2D;
-		// InputDir の CurrentDir に対する直交成分
-		const FVector PerpInput = InputDir2D - FVector::DotProduct(InputDir2D, CurrentDir) * CurrentDir;
-		// 現在方向 + 直交成分 → 新しい方向（速さはそのまま）
-		const FVector SteerDir = (CurrentDir + PerpInput * static_cast<float>(SteeringStrength)).GetSafeNormal2D();
-		if (!SteerDir.IsNearlyZero(UE_KINDA_SMALL_NUMBER))
-		{
-			ModifiedDesiredVelocity = FVector(SteerDir.X * DesiredSpeed2D, SteerDir.Y * DesiredSpeed2D, DesiredVelocity.Z);
-		}
-	}
+	// DesiredVelocity / DesiredFacing はカメラ・移動入力から作られるため滑走中には使わない。
+	// 保持した方位だけを速度目標・キャラクターの向きに渡す。
+	const FVector LockedDesiredVelocity = SlidingState.Heading * MaxSpeedOverride;
+	const FQuat LockedDesiredFacing = FQuat::FindBetween(FVector::ForwardVector, SlidingState.Heading);
 
 	Super::GenerateWalkMove_Implementation(
 		StartState, DeltaSeconds, SimContext,
-		ModifiedDesiredVelocity, DesiredFacing, CurrentFacing,
+		LockedDesiredVelocity, LockedDesiredFacing, CurrentFacing,
 		InOutAngularVelocityDegrees, InOutVelocity);
 }

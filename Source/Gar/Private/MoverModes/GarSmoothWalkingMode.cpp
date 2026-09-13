@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "MoverModes/GarSmoothWalkingMode.h"
-#include "GarSmoothWalkingState.h"
+#include "State/GarSmoothWalkingState.h"
 
 #include "Math/SpringMath.h"
 
