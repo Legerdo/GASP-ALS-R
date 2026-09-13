@@ -92,9 +92,9 @@ protected:
 
 	// ---- Steering ----
 
-	/** スライディング中の曲げ強度。1.0 = 入力が完全横向きのとき DesiredDir が 45° 曲がる */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mover|Sliding|Steering", meta = (ClampMin = "0"))
-	double SteeringStrength = 1.0;
+	/** A/D（横軸）を押している間の旋回速度。視点の回転や前後入力は滑走方位に影響しない。 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mover|Sliding|Steering", meta = (ClampMin = "0", ForceUnits = "deg/s"))
+	double SteeringTurnRate = 45.0;
 
 	/** XY速度がこの値以下なら Walking へ遷移 (cm/s) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mover|Sliding|Transition", meta = (ClampMin = "0", ForceUnits = "cm/s"))
